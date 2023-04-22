@@ -2,3 +2,5 @@
 
 export(agglomerative_clustering)
 export(distance)
+export(kmeans)
+importFrom(stats,runif)

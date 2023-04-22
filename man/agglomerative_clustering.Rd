@@ -61,11 +61,12 @@ each cluster. It is also known as \strong{UPGMA} or \strong{average-link}.}
 }
 }
 \examples{
+```{r examples}
 ### Example 1: Violent crime rates by US state
 
 ac <- agglomerative_clustering(USArrests, proximity = "AVG")
 plot(ac, hang = -1)
-
+```
 }
 \author{
 Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}

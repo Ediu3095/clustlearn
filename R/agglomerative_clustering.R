@@ -8,7 +8,7 @@
 #' @param proximity the proximity definition to be used. This should be one
 #' of \code{"MIN"} (single linkage), \code{"MAX"} (complete linkage),
 #' \code{"AVG"} (average linkage).
-#' @param method the distance definition to be used. Check [distance()] for the
+#' @param method the distance definition to be used. Check [clustlearn::distance()] for the
 #' available methods.
 #' @param p the exponent of the Minkowski distance.
 #'
