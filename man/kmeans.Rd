@@ -4,7 +4,7 @@
 \alias{kmeans}
 \title{K-Means Clustering}
 \usage{
-kmeans(data, centers, max_iterations = 10, method = "euclidean", p = 3)
+kmeans(data, centers, max_iterations = 10)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -15,17 +15,59 @@ centers. If a number, a random set of rows in x is chosen as the initial
 centers.}
 
 \item{max_iterations}{the maximum number of iterations allowed.}
-
-\item{method}{the distance definition to be used. Check \code{\link[=distance]{distance()}} for the
-available methods.}
-
-\item{p}{the exponent of the Minkowski distance.}
 }
 \value{
-A \code{\link[=kmeans]{kmeans()}} object.
+A \code{\link[stats:kmeans]{stats::kmeans()}} object.
 }
 \description{
 Perform K-Means clustering on a data matrix.
+}
+\details{
+The data given by \code{data} are clustered by the \eqn{k}-means
+method, which aims to partition the points into \eqn{k} groups such that the
+sum of squares from points to the assigned cluster centers is minimized. At
+the minimum, all cluster centers are at the mean of their Voronoi sets (the
+set of data points which are nearest to the cluster center).
+
+The \eqn{k}-means method follows a 2 to \eqn{n} step process:
+
+\enumerate{
+\item The first step can be subdivided into 3 steps: \enumerate{
+\item Selection of the number \eqn{k} of clusters, into which the data is
+going to be grouped and of which the centers will be the representatives.
+This is determined through the use of the \code{centers} parameter.
+\item Computation of the euclidean distance to each of the centers.
+\item Assignment of each observation to a cluster. The observation is
+assigned to the cluster represented by the nearest center.
+}
+\item The next steps are just like the first but for the first sub-step:
+\enumerate{
+\item Computation of the new centers. The center of each cluster is
+computed as the mean of the observations assigned to said cluster.
+}
+}
+
+The algorithm stops once the centers in step \eqn{n+1} are the same as the
+ones in step \eqn{n}. However, this convergence does not always take place.
+For this reason, the algorithm also stops once a maximum number of iterations
+\code{max_iterations} is reached.
+}
+\examples{
+# a 2-dimensional example
+x <- rbind(matrix(rnorm(100, sd = 0.3), ncol = 2),
+           matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2))
+colnames(x) <- c("x", "y")
+(cl <- kmeans(x, 2))
+plot(x, col = cl$cluster)
+points(cl$centers, col = 1:2, pch = 8, cex = 2)
+
+# sum of squares
+ss <- function(x) sum(scale(x, scale = FALSE)^2)
+
+## cluster centers "fitted" to each obs.:
+fitted.x <- fitted(cl);  head(fitted.x)
+resid.x <- x - fitted(cl)
+
 }
 \author{
 Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}

@@ -61,12 +61,22 @@ each cluster. It is also known as \strong{UPGMA} or \strong{average-link}.}
 }
 }
 \examples{
-```{r examples}
 ### Example 1: Violent crime rates by US state
 
 ac <- agglomerative_clustering(USArrests, proximity = "AVG")
 plot(ac, hang = -1)
-```
+
+### Example 2: Iris flower dataset
+
+ac <- agglomerative_clustering(iris[, 1:4], proximity = "AVG")
+
+# Dendrogram
+plot(ac, hang = -1, label = iris$Species)
+rect.hclust(ac, k = 3, border = 1:3)
+
+# Scatterplot
+plot(iris, col = cutree(ac, k = 3))
+
 }
 \author{
 Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}

@@ -8,7 +8,7 @@
 #' @param proximity the proximity definition to be used. This should be one
 #' of \code{"MIN"} (single linkage), \code{"MAX"} (complete linkage),
 #' \code{"AVG"} (average linkage).
-#' @param method the distance definition to be used. Check [clustlearn::distance()] for the
+#' @param method the distance definition to be used. Check [distance()] for the
 #' available methods.
 #' @param p the exponent of the Minkowski distance.
 #'
@@ -55,6 +55,17 @@
 #' ac <- agglomerative_clustering(USArrests, proximity = "AVG")
 #' plot(ac, hang = -1)
 #'
+#' ### Example 2: Iris flower dataset
+#'
+#' ac <- agglomerative_clustering(iris[, 1:4], proximity = "AVG")
+#'
+#' # Dendrogram
+#' plot(ac, hang = -1, label = iris$Species)
+#' rect.hclust(ac, k = 3, border = 1:3)
+#'
+#' # Scatterplot
+#' plot(iris, col = cutree(ac, k = 3))
+#'
 #' @export
 agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidean", p = 3) {
   # Function needed to calculate the avg distance between two clusters
@@ -63,7 +74,7 @@ agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidea
   # Prepare the data structure which will hold the answer
   ans <- structure(
     list(
-      merge = NULL,
+      merge = numeric(0),
       height = NULL,
       order = NULL,
       labels = rownames(data),
