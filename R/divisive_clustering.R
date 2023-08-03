@@ -80,20 +80,6 @@ divisive_clustering <- function(data, max_iterations = 10) {
       label_max <- label_max - 1
     }
 
-    # # Print the clusters
-    # cat("\n\n--- HDC ---\n\n")
-    # print(str(clusters))
-    # cat("\nTarget:\n")
-    # print(target)
-    # cat("\nLHS:\n")
-    # print(str(lhs))
-    # cat("\nRHS:\n")
-    # print(str(rhs))
-    # cat("\nMerge:\n")
-    # print(matrix(ans$merge, ncol = 2, byrow = TRUE))
-    # cat("\nLabels:\n")
-    # print(sapply(clusters, function(x) x$label))
-
     # Update the answer
     ans$merge <- c(lhs$label, rhs$label, ans$merge)
     ans$height <- c(kmeans_split$totss, ans$height)

@@ -85,121 +85,19 @@
 #'           Inf == distance(m2, method =  "manhattan"))
 #'
 #' @export
-distance <- function(c1, c2 = c1, p = 3, w = NULL, method = "euclidean", simplify = TRUE) {
-  # Load the adequate distance function according to method
-  method <- switch(
-    method,
-    binary    = binary_distance,
-    canberra  = canberra_distance,
-    chebyshev = chebyshev_distance,
-    euclidean = euclidean_distance,
-    manhattan = manhattan_distance,
-    minkowski = function(x, y, adj) minkowski_distance(x, y, p, adj),
-    octile    = octile_distance
-  )
-
-  # Stop if the specified method is not supported
-  if (is.null(method))
-    stop("invalid distance method")
-
-  d <- apply(
-    c1,
-    1,
-    function(x) {
-      apply(
-        c2,
-        1,
-        compute_distance,
-        x = x,
-        w = w,
-        method = method,
-        simplify = TRUE
-      )
-    },
-    simplify = TRUE
-  )
-  colnames(d) <- rownames(c1)
-  rownames(d) <- rownames(c2)
-  if (identical(c1, c2) && simplify)
-    d <- stats::as.dist(d)
-  d
-}
-
-compute_distance <- function(x, y, w = NULL, method) {
-  # Convert inputs to numeric vectors
-  x <- as.numeric(x)
-  y <- as.numeric(y)
-
-  # Ensure both vectors have the same dimensionality
-  if (length(x) != length(y))
-    stop("The x and y vectors must have the same dimensionality")
-
-  # Identify the columns with which to make calculations
-  z <- is.finite(x) | is.finite(y)
-  if (identical(method, canberra_distance))
-    z <- z | (x == 0 & y == 0)
-
-  # Apply weights if necessary
-  if (!is.null(w)) {
-    # First make sure the dimensionality of the weights is alright
-    w <- as.numeric(w)
-    if (length(x) != length(w))
-      stop("The x, y and w vectors must have the same dimensionality")
-
-    # Then apply them
-    z <- z & !(is.na(w) | is.nan(w))
-    x[z] <- x[z] * w[z]
-    y[z] <- y[z] * w[z]
+distance <- function(c1, c2 = NULL, ..., simplify = TRUE) {
+  d <- if (is.null(c2) && simplify) {
+    dist(c1, ...)
+  } else if (is.null(c2)) {
+    as.matrix(dist(c1, ...))
+  } else {
+    rows <- seq.int(from = nrow(c1) + 1, length.out = nrow(c2))
+    cols <- seq.int(length.out = nrow(c1))
+    as.matrix(dist(rbind(c1, c2), ...))[rows, cols]
   }
-
-  # Filter both input vectors
-  x <- x[z]
-  y <- y[z]
-
-  # Compute the adjustment factor
-  adj <- length(z) / sum(z)
-
-  # Compute the distance using the specified method
-  if (sum(z) == 0) NaN else method(x, y, adj)
-}
-
-binary_distance <- function(x, y, adj) {
-  # Compute the Binary distance
-  sum(xor(x, y)) / sum(x | y) # * adj
-}
-
-canberra_distance <- function(x, y, adj) {
-  # Compute the adjusted Canberra distance
-  sum(abs(x - y) / (abs(x) + abs(y))) * adj
-}
-
-chebyshev_distance <- function(x, y, adj) {
-  # Compute the Chebyshev distance
-  max(abs(x - y))
-}
-
-euclidean_distance <- function(x, y, adj) {
-  # Compute the Euclidean distance
-  sqrt(sum((x - y) ^ 2) * adj)
-}
-
-manhattan_distance <- function(x, y, adj) {
-  # Compute the Manhattan distance
-  sum(abs(x - y) * adj)
-}
-
-minkowski_distance <- function(x, y, p, adj) {
-  # Compute the Minkowski distance
-  sum((abs(x - y) ^ p) * adj) ^ (1 / p)
-}
-
-octile_distance <- function(x, y, adj) {
-  # Compute the absolute difference of each dimension and sort them
-  dif <- -sort(-abs(x - y))
-
-  # Compute the difference between each dimension and the previous one
-  dif <- dif - c(dif[-1], 0)
-
-  # Compute the Octile distance
-  sum(dif * sqrt(seq_along(dif)) * adj)
+  if (!is.null(c2) || !simplify) {
+    colnames(d) <- rownames(c1)
+    rownames(d) <- rownames(c2)
+  }
+  d
 }
