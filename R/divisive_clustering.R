@@ -4,8 +4,7 @@
 #'
 #' @param data a set of observations, presented as a matrix-like object where
 #' every row is a new observation.
-#' @param max_iterations the maximum number of iterations to use in the calls to
-#' [kmeans()] when the algorithm is looking for a bipartition of a cluster.
+#' @param ... additional arguments passed to [kmeans()].
 #'
 #' @details
 #'
@@ -17,7 +16,7 @@
 #' @examples
 #'
 #' @export
-divisive_clustering <- function(data, max_iterations = 10) {
+divisive_clustering <- function(data, ...) {
   # Prepare the data structure which will hold the answer
   ans <- structure(
     list(
@@ -27,7 +26,7 @@ divisive_clustering <- function(data, max_iterations = 10) {
       labels = rownames(data),
       method = "kmeans",
       call = NULL,
-      dist.method = "euclidean"
+      dist.method = "Euclidean"
     ),
     class = "hclust"
   )

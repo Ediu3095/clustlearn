@@ -8,9 +8,7 @@
 #' @param proximity the proximity definition to be used. This should be one
 #' of \code{"MIN"} (single linkage), \code{"MAX"} (complete linkage),
 #' \code{"AVG"} (average linkage).
-#' @param method the distance definition to be used. Check [distance()] for the
-#' available methods.
-#' @param p the exponent of the Minkowski distance.
+#' @param ... additional arguments passed to [proxy::dist()].
 #'
 #' @details This function performs a hierarchical cluster analysis for the
 #' \eqn{n} objects being clustered. The definition of a set of clusters using
@@ -66,8 +64,9 @@
 #' # Scatterplot
 #' plot(iris, col = cutree(ac, k = 3))
 #'
+#' @importFrom proxy dist
 #' @export
-agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidean", p = 3) {
+agglomerative_clustering <- function(data, proximity = "MIN", ...) {
   # Function needed to calculate the avg distance between two clusters
   avg <- function(m1, m2) function(d1, d2) (d1 * m1 + d2 * m2) / (m1 + m2)
 
@@ -80,13 +79,13 @@ agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidea
       labels = rownames(data),
       method = proximity,
       call = NULL,
-      dist.method = method
+      dist.method = "euclidean"
     ),
     class = "hclust"
   )
 
   # Compute the distances between each point
-  d <- distance(data, p = p, method = method, simplify = FALSE)
+  d <- as.matrix(proxy::dist(data, ...))
   d <- mapply(
     "[<-",
     data.frame(d),
@@ -94,11 +93,13 @@ agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidea
     sample(Inf, nrow(data), TRUE),
     USE.NAMES = FALSE
   )
+  method <- attr(d, "method")
+  ans$dist.method <- if (is.null(method)) "Euclidean" else method
 
   # Create a list with the initial clusters
   c <- lapply(
     seq_len(nrow(data)),
-    function (data) {
+    function(data) {
       structure(
         data,
         label = -data,
@@ -106,11 +107,6 @@ agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidea
       )
     }
   )
-
-  # # Print the distance matrix and the clusters
-  # cat("\n\n###\n\n")
-  # print(d)
-  # print(str(c))
 
   for (i in seq_len(length(c) - 1)) {
     # Look for the minimum distance between two clusters
@@ -151,11 +147,6 @@ agglomerative_clustering <- function(data, proximity = "MIN", method = "euclidea
     d[, md[1]] <- d3
     d[md[1], ] <- d3
     d <- d[-md[2], -md[2]]
-
-    # # Print the distance matrix and the clusters
-    # cat("\n\n###\n\n")
-    # print(d)
-    # print(str(c))
   }
 
   # Compute the merge and order of the hclust

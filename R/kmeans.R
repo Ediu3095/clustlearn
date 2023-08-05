@@ -8,6 +8,7 @@
 #' centers. If a number, a random set of rows in x is chosen as the initial
 #' centers.
 #' @param max_iterations the maximum number of iterations allowed.
+#' @param ... additional arguments passed to [proxy::dist()].
 #'
 #' @details The data given by \code{data} are clustered by the \eqn{k}-means
 #' method, which aims to partition the points into \eqn{k} groups such that the
@@ -60,18 +61,18 @@
 #'
 #' @importFrom stats runif
 #' @export
-kmeans <- function(data, centers, max_iterations = 10) {
+kmeans <- function(data, centers, max_iterations = 10, ...) {
   # Get centers
   if (missing(centers))
     stop('centers must be a matrix or a number')
-  if (length(centers) == 1)
-    centers <- data[sample(nrow(data), size = centers, replace = FALSE), , drop = FALSE]
-    # centers <- apply(
-    #   data,
-    #   2,
-    #   function(col) {
-    #     runif(centers, min = min(col), max = max(col))
-    #   })
+  if (length(centers) == 1) {
+    smp <- sample(nrow(data), size = centers, replace = FALSE)
+    centers <- data[smp, , drop = FALSE]
+  }
+
+  # Compute distances between points and centers
+  distances <- proxy::dist(data, centers, ...)
+  iter <- 0
 
   # Update centers while they don't change
   for (i in seq_len(max_iterations)) {
@@ -79,7 +80,7 @@ kmeans <- function(data, centers, max_iterations = 10) {
     old_centers <- as.matrix(centers)
 
     # Compute distances between points and centers
-    distances <- distance(data, old_centers, simplify = FALSE)
+    distances <- proxy::dist(data, old_centers, ...)
 
     # Find which center is closest to each point
     nearest_centers <- apply(distances, 2, which.min)
@@ -93,7 +94,8 @@ kmeans <- function(data, centers, max_iterations = 10) {
           apply(temp, 2, mean)
         else
           old_centers[n, ]
-      })
+      }
+    )
     centers <- t(new_centers)
 
     # If centers aren't updated
@@ -122,10 +124,10 @@ kmeans <- function(data, centers, max_iterations = 10) {
   )
 
   # Total within-cluster sum of squares
-  tot.withinss <- sum(withinss)
+  tot_withinss <- sum(withinss)
 
   # The between-cluster sum of squares
-  betweenss <- totss - tot.withinss
+  betweenss <- totss - tot_withinss
 
   structure(
     list(
@@ -133,12 +135,12 @@ kmeans <- function(data, centers, max_iterations = 10) {
       centers = centers,
       totss = totss,
       withinss = withinss,
-      tot.withinss = tot.withinss,
+      tot.withinss = tot_withinss,
       betweenss = betweenss,
       size = as.integer(table(nearest_centers)),
       iter = iter,
       ifault = 0
     ),
-    class = 'kmeans'
+    class = "kmeans"
   )
 }
