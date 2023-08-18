@@ -2,9 +2,9 @@
 % Please edit documentation in R/dbscan.R
 \name{dbscan}
 \alias{dbscan}
-\title{Divisive Hierarchical Clustering}
+\title{Density Based Spatial Clustering of Applications with Noise (DBSCAN)}
 \usage{
-dbscan(data, eps = 0.5, min_pts = 5, method = "euclidean", p = 2)
+dbscan(data, eps, min_pts = 4, ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -15,27 +15,77 @@ every row is a new observation.}
 \item{min_pts}{the minimum amount of neighbors for a region to be considered
 dense.}
 
-\item{method}{the distance definition to be used. Check \code{\link[=distance]{distance()}} for the
-available methods.}
-
-\item{p}{the power of the Minkowski distance to be used. Only used if
-\code{method = "minkowski"}.}
+\item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
 \value{
-A \code{\link[=kmeans]{kmeans()}} object.
+A \code{\link[=dbscan]{dbscan()}} object. It is a list with the following
+components:
+\tabular{ll}{
+\code{cluster} \tab a vector of integers (from 0 to \code{max(cl$cluster)})
+indicating the cluster to which each point belongs. Points in cluster number
+0 are considered outliers. \cr
+\code{eps} \tab the value of \code{eps} used. \cr
+\code{min_pts} \tab the value of \code{min_pts} used. \cr
+\code{size} \tab a vector with the number of data points belonging to each
+cluster (where the first element is the number of outliers). \cr
+}
 }
 \description{
-Hierarchical divisive cluster analysis on a set of observations
+Perform DBSCAN clustering on a data matrix.
+}
+\details{
+The data given by \code{data} is clustered by the DBSCAN method,
+which aims to partition the points into clusters such that the points in a
+cluster are close to each other and the points in different clusters are far
+away from each other. The clusters are defined as dense regions of points
+separated by regions of low density.
+
+The DBSCAN method follows a 2 step process:
+
+\enumerate{
+\item For each point, the neighborhood of radius \code{eps} is computed. If
+the neighborhood contains at least \code{min_pts} points, then the point is
+considered a \strong{core point}. Otherwise, the point is considered an
+\strong{outlier}.
+\item For each core point, if the core point is not already assigned to a
+cluster, a new cluster is created and the core point is assigned to it.
+Then, the neighborhood of the core point is explored. If a point in the
+neighborhood is a core point, then the neighborhood of that point is also
+explored. This process is repeated until all points in the neighborhood have
+been explored. If a point in the neighborhood is not already assigned to a
+cluster, then it is assigned to the cluster of the core point.
+}
+
+Whatever points are not assigned to a cluster are considered outliers.
 }
 \examples{
-# a 2-dimensional example
-x <- rbind(matrix(rnorm(100, sd = 0.3), ncol = 2),
-           matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2))
-colnames(x) <- c("x", "y")
-(cl <- dbscan(x, 0.5, 5))
-plot(x, col = cl, pch = 20)
+### Helper function
+test <- function(db, eps) {
+  print(cl <- clustlearn::dbscan(db, eps))
+  out <- cl$cluster == 0
+  plot(db[!out, ], col = cl$cluster[!out], pch = 20, asp = 1)
+  points(db[out, ], col = max(cl$cluster) + 1, pch = 4, lwd = 2)
+}
+
+### Example 1
+test(clustlearn::db1, 0.3)
+
+### Example 2
+test(clustlearn::db2, 0.3)
+
+### Example 3
+test(clustlearn::db3, 0.25)
+
+### Example 4
+test(clustlearn::db4, 0.2)
+
+### Example 5
+test(clustlearn::db5, 0.3)
+
+### Example 6
+test(clustlearn::db6, 0.3)
 
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
+Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
 }

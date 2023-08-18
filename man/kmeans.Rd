@@ -4,17 +4,22 @@
 \alias{kmeans}
 \title{K-Means Clustering}
 \usage{
-kmeans(data, centers, max_iterations = 10)
+kmeans(data, centers, max_iterations = 10, initialization = "kmeans++", ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
 every row is a new observation.}
 
 \item{centers}{either the number of clusters or a set of initial cluster
-centers. If a number, a random set of rows in x is chosen as the initial
-centers.}
+centers. If a number, the centers are chosen according to the
+\code{initialization} parameter.}
 
 \item{max_iterations}{the maximum number of iterations allowed.}
+
+\item{initialization}{the initialization method to be used. This should be
+one of \code{"random"} or \code{"kmeans++"}. The latter is the default.}
+
+\item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
 \value{
 A \code{\link[stats:kmeans]{stats::kmeans()}} object.
@@ -23,7 +28,7 @@ A \code{\link[stats:kmeans]{stats::kmeans()}} object.
 Perform K-Means clustering on a data matrix.
 }
 \details{
-The data given by \code{data} are clustered by the \eqn{k}-means
+The data given by \code{data} is clustered by the \eqn{k}-means
 method, which aims to partition the points into \eqn{k} groups such that the
 sum of squares from points to the assigned cluster centers is minimized. At
 the minimum, all cluster centers are at the mean of their Voronoi sets (the
@@ -36,7 +41,7 @@ The \eqn{k}-means method follows a 2 to \eqn{n} step process:
 \item Selection of the number \eqn{k} of clusters, into which the data is
 going to be grouped and of which the centers will be the representatives.
 This is determined through the use of the \code{centers} parameter.
-\item Computation of the euclidean distance to each of the centers.
+\item Computation of the distance from each data point to each center.
 \item Assignment of each observation to a cluster. The observation is
 assigned to the cluster represented by the nearest center.
 }
@@ -51,24 +56,81 @@ The algorithm stops once the centers in step \eqn{n+1} are the same as the
 ones in step \eqn{n}. However, this convergence does not always take place.
 For this reason, the algorithm also stops once a maximum number of iterations
 \code{max_iterations} is reached.
+
+The \code{initialization} methods provided by this function are:
+
+\describe{
+\item{\code{random}}{A set of \code{centers} observations is chosen at
+random from the data as the initial centers.}
+\item{\code{kmeans++}}{The \code{centers} observations are chosen using the
+\strong{kmeans++} algorithm. This algorithm chooses the first center at
+random and then chooses the next center from the remaining observations with
+probability proportional to the square distance to the closest center. This
+process is repeated until \code{centers} centers are chosen.}
+}
 }
 \examples{
-# a 2-dimensional example
-x <- rbind(matrix(rnorm(100, sd = 0.3), ncol = 2),
-           matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2))
-colnames(x) <- c("x", "y")
-(cl <- kmeans(x, 2))
-plot(x, col = cl$cluster, pch = 20)
-points(cl$centers, col = 1:2, pch = 10, cex = 2)
+### Voronoi tesselation
+voronoi <- require(deldir)
+cols <- c(
+  "#00000019",
+  "#DF536B19",
+  "#61D04F19",
+  "#2297E619",
+  "#28E2E519",
+  "#CD0BBC19",
+  "#F5C71019",
+  "#9E9E9E19"
+)
 
-# sum of squares
-ss <- function(x) sum(scale(x, scale = FALSE)^2)
+### Helper function
+test <- function(db, k) {
+  print(cl <- clustlearn::kmeans(db, k, 100))
+  plot(db, col = cl$cluster, asp = 1, pch = 20)
+  points(cl$centers, col = seq_len(k), pch = 13, cex = 2, lwd = 2)
 
-## cluster centers "fitted" to each obs.:
-fitted.x <- fitted(cl);  head(fitted.x)
-resid.x <- x - fitted(cl)
+  if (voronoi) {
+    x <- c(min(db[, 1]), max(db[, 1]))
+    dx <- c(x[1] - x[2], x[2] - x[1])
+    y <- c(min(db[, 2]), max(db[, 2]))
+    dy <- c(y[1] - y[2], y[2] - y[1])
+    tesselation <- deldir(
+      cl$centers[, 1],
+      cl$centers[, 2],
+      rw = c(x + dx, y + dy)
+    )
+    tiles <- tile.list(tesselation)
+
+    plot(
+      tiles,
+      asp = 1,
+      add = TRUE,
+      showpoints = FALSE,
+      border = "#00000000",
+      fillcol = cols
+    )
+  }
+}
+
+### Example 1
+test(clustlearn::db1, 2)
+
+### Example 2
+test(clustlearn::db2, 2)
+
+### Example 3
+test(clustlearn::db3, 3)
+
+### Example 4
+test(clustlearn::db4, 3)
+
+### Example 5
+test(clustlearn::db5, 3)
+
+### Example 6
+test(clustlearn::db6, 3)
 
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
+Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
 }

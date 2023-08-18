@@ -4,22 +4,68 @@
 \alias{divisive_clustering}
 \title{Divisive Hierarchical Clustering}
 \usage{
-divisive_clustering(data, max_iterations = 10)
+divisive_clustering(data, ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
 every row is a new observation.}
 
-\item{max_iterations}{the maximum number of iterations to use in the calls to
-\code{\link[=kmeans]{kmeans()}} when the algorithm is looking for a bipartition of a cluster.}
+\item{...}{additional arguments passed to \code{\link[=kmeans]{kmeans()}}.}
 }
 \value{
-An \code{\link[=hclust]{hclust()}} object which describes the tree produced by the
+An \code{\link[stats:hclust]{stats::hclust()}} object which describes the tree produced by the
 clustering process.
 }
 \description{
-Hierarchical divisive cluster analysis on a set of observations
+Perform a hierarchical Divisive cluster analysis on a set of
+observations
+}
+\details{
+This function performs a hierarchical cluster analysis for the
+\eqn{n} objects being clustered. The definition of a set of clusters using
+this method follows a \eqn{n} step process, which repeats until \eqn{n}
+clusters remain:
+
+\enumerate{
+\item Initially, each object is assigned to the same cluster. The sum of
+squares of the distances between objects and their cluster center is
+computed.
+\item The cluster with the highest sum of squares is split into two using
+the k-means algorithm. This step is repeated until \eqn{n} clusters remain.
+}
+}
+\examples{
+### Helper function
+test <- function(db, k) {
+  print(cl <- clustlearn::divisive_clustering(db))
+  par(mfrow = c(1, 2))
+  plot(db, col = cutree(cl, k), asp = 1, pch = 20)
+  h <- rev(cl$height)[50]
+  clu <- as.hclust(cut(as.dendrogram(cl), h = h)$upper)
+  ctr <- unique(cutree(cl, k)[cl$order])
+  plot(clu, labels = FALSE, hang = -1, xlab = "Cluster", sub = "", main = "")
+  rect.hclust(clu, k = k, border = ctr)
+}
+
+### Example 1
+test(clustlearn::db1, 2)
+
+### Example 2
+test(clustlearn::db2, 2)
+
+### Example 3
+test(clustlearn::db3, 3)
+
+### Example 4
+test(clustlearn::db4, 3)
+
+### Example 5
+test(clustlearn::db5, 3)
+
+### Example 6
+test(clustlearn::db6, 3)
+
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
+Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
 }

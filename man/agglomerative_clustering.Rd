@@ -4,28 +4,25 @@
 \alias{agglomerative_clustering}
 \title{Agglomerative Hierarchical Clustering}
 \usage{
-agglomerative_clustering(data, proximity = "MIN", method = "euclidean", p = 3)
+agglomerative_clustering(data, proximity = "single", ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
 every row is a new observation.}
 
 \item{proximity}{the proximity definition to be used. This should be one
-of \code{"MIN"} (single linkage), \code{"MAX"} (complete linkage),
-\code{"AVG"} (average linkage).}
+of \code{"single"} (minimum/single linkage), \code{"complete"} (maximum/
+complete linkage), \code{"average"} (average linkage).}
 
-\item{method}{the distance definition to be used. Check \code{\link[=distance]{distance()}} for the
-available methods.}
-
-\item{p}{the exponent of the Minkowski distance.}
+\item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
 \value{
-An \code{\link[=hclust]{hclust()}} object which describes the tree produced by the
+An \code{\link[stats:hclust]{stats::hclust()}} object which describes the tree produced by the
 clustering process.
 }
 \description{
-Hierarchical agglomerative cluster analysis on a set of
-observations
+Perform a hierarchical agglomerative cluster analysis on a set
+of observations
 }
 \details{
 This function performs a hierarchical cluster analysis for the
@@ -35,49 +32,62 @@ cluster remains:
 
 \enumerate{
 \item Initially, each object is assigned to its own cluster. The matrix
-of distances between clusters is computed. This is done according to the
-specified \code{method}.
-\item The two clusters with closest proximity be joined together and the
-proximity matrix will be updated. This is done according to the specified
+of distances between clusters is computed.
+\item The two clusters with closest proximity will be joined together and
+the proximity matrix updated. This is done according to the specified
 \code{proximity}. This step is repeated until a single cluster remains.
 }
 
 The definitions of \code{proximity} considered by this function are:
 
 \describe{
-\item{\code{MIN}}{\eqn{\min\left\{d(x,y):x\in A,y\in B\right\}}. Defines the
-proximity between two clusters as the distance between the closest objects
-among the two clusters. It produces clusters where each object is closest to
-at least one other object in the same cluster. It is also known as
-\strong{SLINK} or \strong{single-link}.}
-\item{\code{MAX}}{\eqn{\max\left\{d(x,y):x\in A,y\in B\right\}}. Defines the
-proximity between two clusters as the distance between the furthest objects
-among the two clusters. It is also known as \strong{CLINK} or
-\strong{complete-link}.}
-\item{\code{AVG}}{\eqn{\frac{1}{\left|A\right|\cdot\left|B\right|}
+\item{\code{single}}{\eqn{\min\left\{d(x,y):x\in A,y\in B\right\}}. Defines
+the proximity between two clusters as the distance between the closest
+objects among the two clusters. It produces clusters where each object is
+closest to at least one other object in the same cluster. It is known as
+\strong{SLINK}, \strong{single-link} and \strong{minimum-link}.}
+\item{\code{complete}}{\eqn{\max\left\{d(x,y):x\in A,y\in B\right\}}.
+Defines the proximity between two clusters as the distance between the
+furthest objects among the two clusters. It is known as \strong{CLINK},
+\strong{complete-link} and \strong{maximum-link}.}
+\item{\code{average}}{\eqn{\frac{1}{\left|A\right|\cdot\left|B\right|}
  \sum_{x\in A}\sum_{y\in B} d(x,y)}. Defines the proximity between two
 clusters as the average distance between every pair of objects, one from
 each cluster. It is also known as \strong{UPGMA} or \strong{average-link}.}
 }
 }
 \examples{
-### Example 1: Violent crime rates by US state
+### Helper function
+test <- function(db, k, prox) {
+  print(cl <- clustlearn::agglomerative_clustering(db, prox))
+  par(mfrow = c(1, 2))
+  plot(db, col = cutree(cl, k), asp = 1, pch = 20)
+  h <- rev(cl$height)[50]
+  clu <- as.hclust(cut(as.dendrogram(cl), h = h)$upper)
+  ctr <- unique(cutree(cl, k)[cl$order])
+  plot(clu, labels = FALSE, hang = -1, xlab = "Cluster", sub = "", main = "")
+  rect.hclust(clu, k = k, border = ctr)
+}
 
-ac <- agglomerative_clustering(USArrests, proximity = "AVG")
-plot(ac, hang = -1)
+### Example 1
+test(clustlearn::db1, 2, "single")
 
-### Example 2: Iris flower dataset
+### Example 2
+test(clustlearn::db2, 2, "sing") # same as "single"
 
-ac <- agglomerative_clustering(iris[, 1:4], proximity = "AVG")
+### Example 3
+test(clustlearn::db3, 4, "a") # same as "average"
 
-# Dendrogram
-plot(ac, hang = -1, label = iris$Species)
-rect.hclust(ac, k = 3, border = 1:3)
+### Example 4
+test(clustlearn::db4, 6, "s") # same as "single"
 
-# Scatterplot
-plot(iris, col = cutree(ac, k = 3))
+### Example 5
+test(clustlearn::db5, 3, "complete")
+
+### Example 6
+test(clustlearn::db6, 3, "c") # same as "complete"
 
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
+Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
 }

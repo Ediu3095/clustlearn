@@ -1,11 +1,19 @@
 Package: clustlearn
-Title: What the Package Does (One Line, Title Case)
+Title: Learn Clustering Techniques Through Examples and Code
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Authors@R: person("Eduardo", "Ruiz Sabajanes", email = "eduardoruizsabajanes@gmail.com", role = c("aut", "cre"))
+Description: A package that provides R implementations of several clustering techniques
+    along with explanations of the algorithms and implementations, pros and cons
+    of each technique, example use cases with visualizations and coding exercises
+    to test your knowledge.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Depends:
+    R (>= 4.3.0)
+Imports:
+    proxy (>= 0.4-27)
+Suggests:
+    deldir (>= 1.0-9)
+LazyData: true

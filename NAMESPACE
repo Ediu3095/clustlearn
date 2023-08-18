@@ -2,8 +2,9 @@
 
 export(agglomerative_clustering)
 export(dbscan)
-export(distance)
 export(divisive_clustering)
+export(gaussian_mixture)
 export(kmeans)
-importFrom(stats,dist)
-importFrom(stats,runif)
+importFrom(proxy,dist)
+importFrom(stats,cov)
+importFrom(stats,cov.wt)
