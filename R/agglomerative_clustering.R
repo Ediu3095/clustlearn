@@ -122,7 +122,7 @@ agglomerative_clustering <- function(data, proximity = "single", ...) {
   ans$dist.method <- if (is.null(method)) "Euclidean" else method
 
   # Create a list with the initial clusters
-  c <- lapply(
+  cl <- lapply(
     seq_len(nrow(data)),
     function(data) {
       structure(
@@ -133,15 +133,15 @@ agglomerative_clustering <- function(data, proximity = "single", ...) {
     }
   )
 
-  for (i in seq_len(length(c) - 1)) {
+  for (i in seq_len(length(cl) - 1)) {
     # Look for the minimum distance between two clusters
     md <- which.min(d) - 1
     md <- sort(c(md %% nrow(d), md %/% nrow(d)) + 1)
 
     # Join the clusters into a new one
-    c1 <- c[[md[1]]]
+    c1 <- cl[[md[1]]]
     m1 <- attr(c1, "members")
-    c2 <- c[[md[2]]]
+    c2 <- cl[[md[2]]]
     m2 <- attr(c2, "members")
     c3 <- structure(
       list(c1, c2),
@@ -152,8 +152,8 @@ agglomerative_clustering <- function(data, proximity = "single", ...) {
     # Add the merged clusters to the answer
     ans$merge <- c(ans$merge, attr(c1, "label"), attr(c2, "label"))
     ans$height <- c(ans$height, d[md[1], md[2]])
-    c[[md[1]]] <- c3
-    c <- c[-md[2]]
+    cl[[md[1]]] <- c3
+    cl <- cl[-md[2]]
 
     # Recompute the distances (proximity)
     d1 <- d[, md[1]]
@@ -176,7 +176,7 @@ agglomerative_clustering <- function(data, proximity = "single", ...) {
 
   # Compute the merge and order of the hclust
   ans$merge <- matrix(ans$merge, ncol = 2, byrow = TRUE)
-  ans$order <- unlist(c)
+  ans$order <- unlist(cl)
 
   # Return the answer
   ans
