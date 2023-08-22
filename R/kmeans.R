@@ -53,8 +53,6 @@
 #'  process is repeated until \code{centers} centers are chosen.}
 #' }
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return A [stats::kmeans()] object.
 #'
 #' @examples
@@ -117,6 +115,8 @@
 #'
 #' ### Example 6
 #' test(clustlearn::db6, 3)
+#'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 #'
 #' @importFrom proxy dist
 #' @export
@@ -217,10 +217,10 @@ kmeans <- function(
   )
 
   # Total within-cluster sum of squares
-  tot_withinss <- sum(withinss)
+  tot.withinss <- sum(withinss)
 
   # The between-cluster sum of squares
-  betweenss <- totss - tot_withinss
+  betweenss <- totss - tot.withinss
 
   # Find the size of each cluster
   tmp <- factor(nearest_centers, levels = seq_len(nrow(centers)))
@@ -232,7 +232,7 @@ kmeans <- function(
       centers = centers,
       totss = totss,
       withinss = withinss,
-      tot.withinss = tot_withinss,
+      tot.withinss = tot.withinss,
       betweenss = betweenss,
       size = size,
       iter = iter,

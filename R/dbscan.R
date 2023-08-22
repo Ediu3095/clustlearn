@@ -33,8 +33,6 @@
 #'
 #' Whatever points are not assigned to a cluster are considered outliers.
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return A [clustlearn::dbscan()] object. It is a list with the following
 #' components:
 #' \tabular{ll}{
@@ -73,6 +71,8 @@
 #'
 #' ### Example 6
 #' test(clustlearn::db6, 0.3)
+#'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 #'
 #' @importFrom proxy dist
 #' @export

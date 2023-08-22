@@ -51,8 +51,6 @@
 #'  process is repeated until \code{k} centers are chosen.}
 #' }
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return A [stats::kmeans()] object.
 #'
 #' @examples
@@ -116,7 +114,10 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3)
 #'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#'
 #' @importFrom proxy dist
+#' @importFrom stats runif sd
 #' @export
 genetic_kmeans <- function(
   data,
@@ -229,14 +230,16 @@ genetic_kmeans <- function(
   solution
 }
 
-#' @title Initialization method
-#'
-#' @param n the number of observations in the data.
-#' @param p the number of individuals in the population.
-#' @param k the number of clusters.
-#'
-#' @return a matrix of size \code{p} by \code{n} with the cluster assignments
-#' for each observation.
+# @title Initialization method
+#
+# @param n the number of observations in the data.
+# @param p the number of individuals in the population.
+# @param k the number of clusters.
+#
+# @return a matrix of size \code{p} by \code{n} with the cluster assignments
+# for each observation.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_initialization <- function(n, p, k) {
   population <- matrix(0, nrow = p, ncol = n)
 
@@ -259,15 +262,17 @@ gka_initialization <- function(n, p, k) {
   population
 }
 
-#' @title Centroid computation
-#'
-#' @param data a set of observations, presented as a matrix-like object where
-#' every row is a new observation. The matrix is of size \code{n} by \code{m}.
-#' @param k the number of clusters.
-#' @param population a matrix of size \code{p} by \code{n} with the cluster
-#' assignments for each observation.
-#'
-#' @return a 3D array of size \code{p} by \code{k} by \code{m}.
+# @title Centroid computation
+#
+# @param data a set of observations, presented as a matrix-like object where
+# every row is a new observation. The matrix is of size \code{n} by \code{m}.
+# @param k the number of clusters.
+# @param population a matrix of size \code{p} by \code{n} with the cluster
+# assignments for each observation.
+#
+# @return a 3D array of size \code{p} by \code{k} by \code{m}.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_centers <- function(data, k, population) {
   centers <- array(0, dim = c(nrow(population), k, ncol(data)))
   for (i in seq_len(nrow(population))) {
@@ -278,18 +283,20 @@ gka_centers <- function(data, k, population) {
   centers
 }
 
-#' @title Total Within Cluster Variation (TWCV) computation
-#'
-#' @param data a set of observations, presented as a matrix-like object where
-#' every row is a new observation. The matrix is of size \code{n} by \code{m}.
-#' @param k the number of clusters.
-#' @param population a matrix of size \code{p} by \code{n} with the cluster
-#' assignments for each observation.
-#' @param centers a 3D array of size \code{p} by \code{k} by \code{m} with the
-#' cluster centers for each individual in the population.
-#'
-#' @return a vector of size \code{p} with the total within cluster variation of
-#' each individual in the population.
+# @title Total Within Cluster Variation (TWCV) computation
+#
+# @param data a set of observations, presented as a matrix-like object where
+# every row is a new observation. The matrix is of size \code{n} by \code{m}.
+# @param k the number of clusters.
+# @param population a matrix of size \code{p} by \code{n} with the cluster
+# assignments for each observation.
+# @param centers a 3D array of size \code{p} by \code{k} by \code{m} with the
+# cluster centers for each individual in the population.
+#
+# @return a vector of size \code{p} with the total within cluster variation of
+# each individual in the population.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_twcv <- function(data, k, population, centers) {
   twcv <- numeric(nrow(population))
   for (i in seq_len(nrow(population))) {
@@ -303,13 +310,15 @@ gka_twcv <- function(data, k, population, centers) {
   twcv
 }
 
-#' @title Fitness function
-#'
-#' @param twcv a vector of size \code{p} with the total within cluster
-#' variation of each individual in the population.
-#'
-#' @return a vector of size \code{p} with the fitness of each individual in the
-#' population.
+# @title Fitness function
+#
+# @param twcv a vector of size \code{p} with the total within cluster
+# variation of each individual in the population.
+#
+# @return a vector of size \code{p} with the fitness of each individual in the
+# population.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_fitness <- function(twcv) {
   f <- -twcv
   g <- f - (mean(f) - 2 * sd(f))
@@ -317,29 +326,33 @@ gka_fitness <- function(twcv) {
   g
 }
 
-#' @title Selection method
-#'
-#' @param p the number of individuals in the population.
-#' @param fitness a vector of size \code{p} with the fitness of each individual
-#' in the population.
-#'
-#' @return the index of the individual selected for reproduction
+# @title Selection method
+#
+# @param p the number of individuals in the population.
+# @param fitness a vector of size \code{p} with the fitness of each individual
+# in the population.
+#
+# @return the index of the individual selected for reproduction.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_selection <- function(p, fitness) {
   sample(seq_len(p), 1, prob = fitness / sum(fitness))
 }
 
-#' @title Allele mutation probability computation
-#'
-#' @param data a set of observations, presented as a matrix-like object where
-#' every row is a new observation. The matrix is of size \code{n} by \code{m}.
-#' @param k the number of clusters.
-#' @param centers a matrix of size \code{k} by \code{m} with the cluster centers
-#' @param ... additional arguments passed to [proxy::dist()].
-#'
-#' @return a matrix of size \code{n} by \code{k} with the probability of each
-#' allele mutating to a specific cluster.
-#'
-#' @importFrom proxy dist
+# @title Allele mutation probability computation
+#
+# @param data a set of observations, presented as a matrix-like object where
+# every row is a new observation. The matrix is of size \code{n} by \code{m}.
+# @param k the number of clusters.
+# @param centers a matrix of size \code{k} by \code{m} with the cluster centers
+# @param ... additional arguments passed to [proxy::dist()].
+#
+# @return a matrix of size \code{n} by \code{k} with the probability of each
+# allele mutating to a specific cluster.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#
+# @importFrom proxy dist
 gka_allele_mutation <- function(data, k, centers, ...) {
   d <- proxy::dist(data, centers, ...)
   dmax <- apply(d, 1, max)
@@ -353,19 +366,21 @@ gka_allele_mutation <- function(data, k, centers, ...) {
   prob
 }
 
-#' @title Mutation method
-#'
-#' @param chromosome a vector of size \code{n} with the cluster assignments for
-#' each observation.
-#' @param prob a matrix of size \code{n} by \code{k} with the probability of
-#' each allele mutating to a specific cluster.
-#' @param k the number of clusters.
-#' @param mut_probability the probability of a mutation occurring.
-#'
-#' @return a vector of size \code{n} with the cluster assignments for each
-#' observation i.e. a new chromosome.
-#'
-#' @importFrom stats runif
+# @title Mutation method
+#
+# @param chromosome a vector of size \code{n} with the cluster assignments for
+# each observation.
+# @param prob a matrix of size \code{n} by \code{k} with the probability of
+# each allele mutating to a specific cluster.
+# @param k the number of clusters.
+# @param mut_probability the probability of a mutation occurring.
+#
+# @return a vector of size \code{n} with the cluster assignments for each
+# observation i.e. a new chromosome.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#
+# @importFrom stats runif
 gka_mutation <- function(chromosome, prob, k, mut_probability) {
   new_chromosome <- chromosome
   for (i in seq_len(length(new_chromosome))) {
@@ -376,36 +391,40 @@ gka_mutation <- function(chromosome, prob, k, mut_probability) {
   new_chromosome
 }
 
-#' @title Crossover method i.e. K-Means Operator
-#'
-#' @description K-Means Operator (KMO) which replaces the crossover operator in
-#' the Genetic K-Means algorithm (GKA).
-#'
-#' @param data a set of observations, presented as a matrix-like object where
-#' every row is a new observation. The matrix is of size \code{n} by \code{m}.
-#' @param centers a matrix of size \code{k} by \code{m} with the cluster centers
-#' for a specific individual in the population.
-#'
-#' @return a vector of size \code{n} with the cluster assignments for each
-#' observation i.e. a new chromosome.
-#'
-#' @importFrom proxy dist
+# @title Crossover method i.e. K-Means Operator
+#
+# @description K-Means Operator (KMO) which replaces the crossover operator in
+# the Genetic K-Means algorithm (GKA).
+#
+# @param data a set of observations, presented as a matrix-like object where
+# every row is a new observation. The matrix is of size \code{n} by \code{m}.
+# @param centers a matrix of size \code{k} by \code{m} with the cluster centers
+# for a specific individual in the population.
+#
+# @return a vector of size \code{n} with the cluster assignments for each
+# observation i.e. a new chromosome.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#
+# @importFrom proxy dist
 gka_crossover <- function(data, centers) {
   d <- proxy::dist(data, centers)
   apply(d, 1, which.min)
 }
 
-#' @title Chromosome fixing method
-#'
-#' @description This method fixes chromosomes which do not have at least one
-#' observation assigned to each cluster.
-#'
-#' @param population a matrix of size \code{p} by \code{n} with the cluster
-#' assignments for each observation.
-#' @param k the number of clusters.
-#'
-#' @return a matrix of size \code{p} by \code{n} with the cluster assignments
-#' for each observation.
+# @title Chromosome fixing method
+#
+# @description This method fixes chromosomes which do not have at least one
+# observation assigned to each cluster.
+#
+# @param population a matrix of size \code{p} by \code{n} with the cluster
+# assignments for each observation.
+# @param k the number of clusters.
+#
+# @return a matrix of size \code{p} by \code{n} with the cluster assignments
+# for each observation.
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 gka_chromosome_fix <- function(population, k) {
   for (i in seq_len(nrow(population))) {
     sdiff <- setdiff(seq_len(k), unique(population[i, ]))

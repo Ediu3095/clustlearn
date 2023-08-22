@@ -34,8 +34,6 @@
 #' iteration is less than 1e-6 or when the maximum number of iterations is
 #' reached.
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return A [clustlearn::gaussian_mixture()] object. It is a list with the
 #' following components:
 #' \tabular{ll}{
@@ -87,6 +85,8 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3)
 #'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#'
 #' @importFrom stats cov cov.wt
 #' @export
 gaussian_mixture <- function(data, k, max_iter = 10, ...) {
@@ -104,7 +104,7 @@ gaussian_mixture <- function(data, k, max_iter = 10, ...) {
   # EM algorithm
   # Starting values of expected value of the log likelihood
   q <- c(
-    sum_finite(
+    sum.finite(
       sapply(
         seq_len(k),
         function(i) {
@@ -121,19 +121,19 @@ gaussian_mixture <- function(data, k, max_iter = 10, ...) {
       seq_len(k),
       function(i) lambda[i] * dmnorm(data, mu[i, ], as.matrix(sigma[i, , ]))
     )
-    comp_sum <- row_sums_finite(comp)
+    comp_sum <- rowSums.finite(comp)
     p <- comp / comp_sum
 
     # M step
     lambda <- sapply(
       seq_len(k),
-      function(i) sum_finite(p[, i]) / nrow(data)
+      function(i) sum.finite(p[, i]) / nrow(data)
     )
     for (i in seq_len(k)) {
-      mu[i, ] <- col_sums_finite(p[, i] * data) / sum_finite(p[, i])
+      mu[i, ] <- colSums.finite(p[, i] * data) / sum.finite(p[, i])
     }
     for (i in seq_len(k)) {
-      tmp <- cov_wt_finite(data, wt = p[, i], center = mu[i, ])$cov
+      tmp <- cov.wt.finite(data, wt = p[, i], center = mu[i, ])$cov
       sigma[i, , ] <- as.matrix(tmp)
     }
 
@@ -164,9 +164,21 @@ gaussian_mixture <- function(data, k, max_iter = 10, ...) {
   )
 }
 
-# x is a matrix where each row is a data point
-# mu is a vector
-# sigma is a square matrix with sides as big as x has columns
+##############################################
+### I don't want to export these functions ###
+##############################################
+
+# @title Density of a multivariate normal distribution
+#
+# @description Compute the density of a multivariate normal distribution
+#
+# @param x is a matrix where each row is a data point
+# @param mu is a vector
+# @param sigma is a square matrix with sides as big as x has columns
+#
+# @return a vector with the density of each data point
+#
+# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 dmnorm <- function(x, mu, sigma) {
   k <- ncol(sigma)
 
@@ -178,20 +190,21 @@ dmnorm <- function(x, mu, sigma) {
   num / den
 }
 
-# Finite versions of sum, rowSums, colSums and cov.wt
-sum_finite <- function(x) {
+# Finite versions of sum, rowSums, colSums and cov.wt i.e. versions that
+# ignore NA, NaN and Inf values
+sum.finite <- function(x) {
   sum(x[is.finite(x)])
 }
 
-row_sums_finite <- function(x) {
+rowSums.finite <- function(x) {
   rowSums(x[, is.finite(colSums(x)), drop = FALSE])
 }
 
-col_sums_finite <- function(x) {
+colSums.finite <- function(x) {
   colSums(x[is.finite(rowSums(x)), , drop = FALSE])
 }
 
-cov_wt_finite <- function(x, wt, center) {
+cov.wt.finite <- function(x, wt, center) {
   fnt <- is.finite(wt)
   cov.wt(x[fnt, , drop = FALSE], wt = wt[fnt], center = center)
 }

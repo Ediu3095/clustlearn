@@ -41,8 +41,6 @@
 #'  each cluster. It is also known as \strong{UPGMA} or \strong{average-link}.}
 #' }
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return An [stats::hclust()] object which describes the tree produced by the
 #' clustering process.
 #'
@@ -76,6 +74,8 @@
 #'
 #' ### Example 6
 #' test(clustlearn::db6, 3, "c") # same as "complete"
+#'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 #'
 #' @importFrom proxy dist
 #' @export

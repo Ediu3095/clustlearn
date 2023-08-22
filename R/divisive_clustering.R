@@ -20,8 +20,6 @@
 #'  the k-means algorithm. This step is repeated until \eqn{n} clusters remain.
 #' }
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
-#'
 #' @return An [stats::hclust()] object which describes the tree produced by the
 #' clustering process.
 #'
@@ -55,6 +53,8 @@
 #'
 #' ### Example 6
 #' test(clustlearn::db6, 3)
+#'
+#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 #'
 #' @export
 divisive_clustering <- function(data, ...) {
