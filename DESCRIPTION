@@ -1,7 +1,7 @@
 Package: clustlearn
 Title: Learn Clustering Techniques Through Examples and Code
 Version: 0.0.0.9000
-Authors@R: person("Eduardo", "Ruiz Sabajanes", email = "eduardoruizsabajanes@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Eduardo", "Ruiz Sabajanes", email = "eduardoruizsabajanes@gmail.com", role = c("aut", "cre", "man"))
 Description: A package that provides R implementations of several clustering techniques
     along with explanations of the algorithms and implementations, pros and cons
     of each technique, example use cases with visualizations and coding exercises

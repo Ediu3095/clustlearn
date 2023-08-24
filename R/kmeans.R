@@ -196,6 +196,9 @@ kmeans <- function(
       break
   }
 
+  # Compute distances between points and centers
+  distances <- proxy::dist(old_centers, data, ...)
+
   # Find which center is closest to each point
   nearest_centers <- apply(distances, 2, which.min)
 
