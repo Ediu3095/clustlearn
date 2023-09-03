@@ -89,6 +89,7 @@ divisive_clustering <- function(data, ...) {
   while (any(sapply(clusters, function(x) length(x$elems)) > 1)) {
     # We'll operate on the first cluster and order them all afterwards
     target <- clusters[[1]]
+    clusters <- clusters[-1]
 
     # Split the target cluster into two using the k-means approach
     km <- clustlearn::kmeans(target$data, 2, ...)
@@ -124,18 +125,12 @@ divisive_clustering <- function(data, ...) {
     ans$height <- c(km$totss, ans$height)
 
     # Replace the target cluster with the two new ones
-    clusters <- c(
-      if (length(lhs$elems) > 1 && length(rhs$elems) > 1) {
-        list(lhs, rhs)
-      } else if (length(lhs$elems) > 1) {
-        list(lhs)
-      } else if (length(rhs$elems) > 1) {
-        list(rhs)
-      } else {
-        list()
-      },
-      clusters[-1]
-    )
+    if (length(rhs$elems) > 1) {
+      clusters <- c(list(rhs), clusters)
+    }
+    if (length(lhs$elems) > 1) {
+      clusters <- c(list(lhs), clusters)
+    }
   }
 
   # Compute the merge and order of the hclust

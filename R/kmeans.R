@@ -57,7 +57,7 @@
 #'
 #' @examples
 #' ### Voronoi tesselation
-#' voronoi <- require(deldir)
+#' voronoi <- suppressMessages(suppressWarnings(require(deldir)))
 #' cols <- c(
 #'   "#00000019",
 #'   "#DF536B19",
@@ -197,7 +197,7 @@ kmeans <- function(
   }
 
   # Compute distances between points and centers
-  distances <- proxy::dist(old_centers, data, ...)
+  distances <- proxy::dist(centers, data, ...)
 
   # Find which center is closest to each point
   nearest_centers <- apply(distances, 2, which.min)

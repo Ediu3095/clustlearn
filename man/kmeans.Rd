@@ -71,7 +71,7 @@ process is repeated until \code{centers} centers are chosen.}
 }
 \examples{
 ### Voronoi tesselation
-voronoi <- require(deldir)
+voronoi <- suppressMessages(suppressWarnings(require(deldir)))
 cols <- c(
   "#00000019",
   "#DF536B19",
