@@ -10,6 +10,8 @@
 #' @param max_iterations the maximum number of iterations allowed.
 #' @param initialization the initialization method to be used. This should be
 #' one of \code{"random"} or \code{"kmeans++"}. The latter is the default.
+#' @param details .
+#' @param waiting .
 #' @param ... additional arguments passed to [proxy::dist()].
 #'
 #' @details The data given by \code{data} is clustered by the \eqn{k}-means
@@ -119,12 +121,15 @@
 #' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
 #'
 #' @importFrom proxy dist
+#' @importFrom graphics lines points
 #' @export
 kmeans <- function(
   data,
   centers,
   max_iterations = 10,
   initialization = "kmeans++",
+  details = FALSE,
+  waiting = FALSE,
   ...
 ) {
   # Make sure max_iterations is a positive integer
@@ -135,6 +140,7 @@ kmeans <- function(
   if (missing(centers))
     stop("centers must be a matrix or a number")
 
+  init <- 3
   if (length(centers) == 1) {
     if (centers < 1)
       stop("centers must be a positive integer")
@@ -142,25 +148,62 @@ kmeans <- function(
       stop("centers must be less than or equal to the number of observations")
 
     # Figure out the initialization method
-    initialization <- grep(
+    init <- grep(
       tolower(initialization),
       c("random", "kmeans++"),
       fixed = TRUE
     )
 
-    if (length(initialization) != 1)
+    if (length(init) != 1)
       stop("initialization must be one of 'random' or 'kmeans++'")
+  }
 
-    # Initialize centers ...
-    centers <- switch(
-      initialization,
+  if (details) {
+    hline()
+    console.log("EXPLANATION:")
+    console.log("")
+    console.log("The K-Means algorithm aims to partition a dataset into k groups such that the within-cluster sum-of-squares is minimized. At the minimum, all cluster centers are at the mean of their Voronoi sets (the set of data points which are nearest to the cluster center).")
+    console.log("The K-Means method follows a 2 to n step process:")
+    console.log("")
+    console.log("    1. The first step can be subdivided into 3 steps:")
+    console.log("        1. Selection of the number k of clusters, into which the data is going to be grouped and of which the centroids will be the representatives.")
+    console.log("        2. Computation of the distance from each observation to each centroid.")
+    console.log("        3. Assignment of each observation to a cluster. Observations are assigned to the cluster represented by the nearest centroid.")
+    console.log("    2. The next steps are just like the first but for the first sub-step we do the following:")
+    console.log("        1. Computation of the new centroids The centroid of each cluster is computed as the mean of the observations assigned to said cluster.")
+    console.log("")
+    console.log("The algorithm stops once the centers in step n+1 are the same as the ones in step n. However, this convergence does not always take place. For this reason, the algorithm also stops once a maximum number of iterations is reached.")
+    console.log("")
 
-      # ... randomly
-      random_init(as.matrix(data), centers, ...),
+    hline()
+    console.log("STEP: 1")
+    console.log("")
+    console.log("If they are not, k centroids have to be initialized...")
+    console.log("")
+  }
 
-      # ... using the kmeans++ algorithm
-      kmeanspp_init(as.matrix(data), centers, ...)
-    )
+  # Initialize centers ...
+  centers <- switch(
+    init,
+    # ... randomly
+    random_init(as.matrix(data), centers, details, waiting, ...),
+    # ... using the kmeans++ algorithm
+    kmeanspp_init(as.matrix(data), centers, details, waiting, ...),
+    # ... they are already initialized
+    centers
+  )
+
+  if (details) {
+    console.log("With this, the k initial centroids are the following:")
+    cat("Centroids:\n")
+    print(centers)
+    console.log("")
+
+    plot(data, col = nrow(centers) + 1, asp = 1, pch = 20, main = "", sub = "", xlab = "", ylab = "")
+    points(centers, col = seq_len(nrow(centers)), pch = 4, cex = 1, lwd = 2)
+    if (waiting)
+      invisible(readline(prompt="Press [enter] to continue"))
+    console.log("")
   }
 
   # Update centers while they don't change
@@ -191,6 +234,35 @@ kmeans <- function(
     )
     centers <- t(new_centers)
 
+    if (details) {
+      console.log("With these centroids, the matrix of pairwise distances between the observations and the centroids is computed:")
+      cat("Distances:\n")
+      print(round(distances, 3))
+      console.log("")
+      console.log("From these distances, the centroid closest to each observation is computed. In this way, we make the following observation-cluster assignments:")
+      cat("Cluster assignments:\n")
+      print(nearest_centers)
+      console.log("")
+
+      points(data, col = nearest_centers, pch = 20)
+      if (waiting)
+        invisible(readline(prompt="Press [enter] to continue"))
+      console.log("")
+      hline()
+
+      console.log(paste("STEP:", iter + 1))
+      console.log("")
+      console.log("With the previous cluster assignments, we compute the new centroids as the mean of the observations assigned to the corresponding cluster:")
+      cat("Centroids:\n")
+      print(centers)
+      console.log("")
+
+      # points(centers, col = seq_len(nrow(centers)), pch = 4, cex = 1, lwd = 2)
+      for (j in seq_len(nrow(centers))) {
+        lines(c(old_centers[j, 1], centers[j, 1]), c(old_centers[j, 2], centers[j, 2]), col = nrow(centers) + 1, lwd = 2)
+      }
+    }
+
     # If centers aren't updated
     if (all(centers == old_centers))
       break
@@ -204,6 +276,26 @@ kmeans <- function(
 
   # Name the centroids
   row.names(centers) <- seq_len(nrow(centers))
+
+  if (details) {
+    if (iter == max_iterations)
+      console.log("Since we have reached the maximum amount of iterations, these are the last centroids we are going to compute.")
+    else
+      console.log("Since the centroids have not changed with regards to last step, these are the last centroids we are going to compute.")
+    console.log("With these centroids, the matrix of pairwise distances between the observations and the centroids is computed one last time:")
+    cat("Distances:\n")
+    print(round(distances, 3))
+    console.log("")
+    console.log("From these distances, observations are assigned the cluster of whichever centroid they are closest to:")
+    cat("Cluster assignments:\n")
+    print(nearest_centers)
+    console.log("")
+
+    points(data, col = nearest_centers, pch = 20)
+    points(centers, col = seq_len(nrow(centers)), pch = 10, cex = 2, lwd = 2)
+    hline()
+    console.log("")
+  }
 
   # Total sum of squares
   center <- apply(data, 2, mean)
@@ -245,12 +337,22 @@ kmeans <- function(
   )
 }
 
-random_init <- function(data, k, ...) {
+random_init <- function(data, k, details, waiting, ...) {
+  if (details) {
+    console.log("In this case, the k centroids are chosen randomly from the observations...")
+    console.log("")
+  }
+
   smp <- sample(nrow(data), size = k, replace = FALSE)
   data[smp, , drop = FALSE]
 }
 
-kmeanspp_init <- function(data, k, ...) {
+kmeanspp_init <- function(data, k, details, waiting, ...) {
+  if (details) {
+    console.log("In this case, the k centroids are chosen using the kmeans++ algorithm...")
+    console.log("")
+  }
+
   centers <- matrix(0, nrow = k, ncol = ncol(data))
   probs <- rep(1 / nrow(data), nrow(data))
   for (i in seq_len(k)) {
@@ -258,6 +360,23 @@ kmeanspp_init <- function(data, k, ...) {
     # the closest center
     smp <- sample(nrow(data), size = 1, replace = FALSE, prob = probs)
     centers[i, ] <- data[smp, ]
+
+    if (details) {
+      console.log(paste0("--- kmeans++ step #", i, " ---\n"))
+      console.log("A centroid is chosen according to the following probabilities:")
+      cat("Probs:\n")
+      print(round(probs, 3))
+      console.log("The chosen centroid is:")
+      cat(paste0("Observation #", smp, ":\n"))
+      print(centers[i, ])
+      if (i < k)
+        console.log("With this new centroid the probabilities are updated...")
+      else
+        console.log("With this new centroid we already have k centroids...")
+      console.log("")
+      if (waiting)
+        invisible(readline(prompt="Press [enter] to continue"))
+    }
 
     # Update the probabilities
     distances <- proxy::dist(centers[seq_len(i), , drop = FALSE], data, ...) ^ 2

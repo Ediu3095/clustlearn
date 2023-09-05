@@ -13,7 +13,8 @@ RoxygenNote: 7.2.3
 Depends:
     R (>= 4.3.0)
 Imports:
-    proxy (>= 0.4-27)
+    proxy (>= 0.4-27),
+    cli (>= 3.6.1)
 Suggests:
     deldir (>= 1.0-9)
 LazyData: true

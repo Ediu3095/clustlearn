@@ -4,7 +4,15 @@
 \alias{kmeans}
 \title{K-Means Clustering}
 \usage{
-kmeans(data, centers, max_iterations = 10, initialization = "kmeans++", ...)
+kmeans(
+  data,
+  centers,
+  max_iterations = 10,
+  initialization = "kmeans++",
+  details = FALSE,
+  waiting = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -18,6 +26,10 @@ centers. If a number, the centers are chosen according to the
 
 \item{initialization}{the initialization method to be used. This should be
 one of \code{"random"} or \code{"kmeans++"}. The latter is the default.}
+
+\item{details}{.}
+
+\item{waiting}{.}
 
 \item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
