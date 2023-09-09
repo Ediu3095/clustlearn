@@ -3,3 +3,4 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^ignore/
+^R/genetic_kmeans.R$

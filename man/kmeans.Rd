@@ -10,7 +10,7 @@ kmeans(
   max_iterations = 10,
   initialization = "kmeans++",
   details = FALSE,
-  waiting = FALSE,
+  waiting = TRUE,
   ...
 )
 }
@@ -27,9 +27,11 @@ centers. If a number, the centers are chosen according to the
 \item{initialization}{the initialization method to be used. This should be
 one of \code{"random"} or \code{"kmeans++"}. The latter is the default.}
 
-\item{details}{.}
+\item{details}{a Boolean determining whether intermediate logs explaining how
+the algorithm works should be printed or not.}
 
-\item{waiting}{.}
+\item{waiting}{a Boolean determining whether the intermediate logs should be
+printed in chunks waiting for user input before printing the next or not.}
 
 \item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
@@ -142,7 +144,10 @@ test(clustlearn::db5, 3)
 ### Example 6
 test(clustlearn::db6, 3)
 
+### Example 7 (with explanations, no plots)
+cl <- kmeans(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
+
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
+Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
 }

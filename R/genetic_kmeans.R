@@ -114,7 +114,7 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3)
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
 #' @importFrom proxy dist
 #' @importFrom stats runif sd
@@ -239,7 +239,7 @@ genetic_kmeans <- function(
 # @return a matrix of size \code{p} by \code{n} with the cluster assignments
 # for each observation.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_initialization <- function(n, p, k) {
   population <- matrix(0, nrow = p, ncol = n)
 
@@ -272,7 +272,7 @@ gka_initialization <- function(n, p, k) {
 #
 # @return a 3D array of size \code{p} by \code{k} by \code{m}.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_centers <- function(data, k, population) {
   centers <- array(0, dim = c(nrow(population), k, ncol(data)))
   for (i in seq_len(nrow(population))) {
@@ -296,7 +296,7 @@ gka_centers <- function(data, k, population) {
 # @return a vector of size \code{p} with the total within cluster variation of
 # each individual in the population.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_twcv <- function(data, k, population, centers) {
   twcv <- numeric(nrow(population))
   for (i in seq_len(nrow(population))) {
@@ -318,7 +318,7 @@ gka_twcv <- function(data, k, population, centers) {
 # @return a vector of size \code{p} with the fitness of each individual in the
 # population.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_fitness <- function(twcv) {
   f <- -twcv
   g <- f - (mean(f) - 2 * sd(f))
@@ -334,7 +334,7 @@ gka_fitness <- function(twcv) {
 #
 # @return the index of the individual selected for reproduction.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_selection <- function(p, fitness) {
   sample(seq_len(p), 1, prob = fitness / sum(fitness))
 }
@@ -350,7 +350,7 @@ gka_selection <- function(p, fitness) {
 # @return a matrix of size \code{n} by \code{k} with the probability of each
 # allele mutating to a specific cluster.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #
 # @importFrom proxy dist
 gka_allele_mutation <- function(data, k, centers, ...) {
@@ -378,7 +378,7 @@ gka_allele_mutation <- function(data, k, centers, ...) {
 # @return a vector of size \code{n} with the cluster assignments for each
 # observation i.e. a new chromosome.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #
 # @importFrom stats runif
 gka_mutation <- function(chromosome, prob, k, mut_probability) {
@@ -404,7 +404,7 @@ gka_mutation <- function(chromosome, prob, k, mut_probability) {
 # @return a vector of size \code{n} with the cluster assignments for each
 # observation i.e. a new chromosome.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #
 # @importFrom proxy dist
 gka_crossover <- function(data, centers) {
@@ -424,7 +424,7 @@ gka_crossover <- function(data, centers) {
 # @return a matrix of size \code{p} by \code{n} with the cluster assignments
 # for each observation.
 #
-# @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+# @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 gka_chromosome_fix <- function(population, k) {
   for (i in seq_len(nrow(population))) {
     sdiff <- setdiff(seq_len(k), unique(population[i, ]))

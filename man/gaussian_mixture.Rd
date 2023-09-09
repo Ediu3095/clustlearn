@@ -4,7 +4,7 @@
 \alias{gaussian_mixture}
 \title{Gaussian mixture model}
 \usage{
-gaussian_mixture(data, k, max_iter = 10, ...)
+gaussian_mixture(data, k, max_iter = 10, details = FALSE, waiting = TRUE, ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -13,6 +13,12 @@ every row is a new observation.}
 \item{k}{the number of clusters to find.}
 
 \item{max_iter}{the maximum number of iterations to perform.}
+
+\item{details}{a Boolean determining whether intermediate logs explaining how
+the algorithm works should be printed or not.}
+
+\item{waiting}{a Boolean determining whether the intermediate logs should be
+printed in chunks waiting for user input before printing the next or not.}
 
 \item{...}{additional arguments passed to \code{\link[=kmeans]{kmeans()}}.}
 }
@@ -51,16 +57,14 @@ gaussian models by means of the Expectation Maximization (EM) algorithm.
 The EM algorithm is an iterative algorithm that alternates between two steps:
 
 \describe{
-\item{Expectation}{Compute the expected value of the log likelihood of the
-data given the current parameters.}
-\item{Maximization}{Update the parameters to maximize the expected value
-of the log likelihood.}
+\item{Expectation}{Compute how much is each observation expected to belong
+to each component of the GMM.}
+\item{Maximization}{Recompute the GMM according to the expectations from
+the E-step in order to maximize them.}
 }
 
-The algorithm stops when the difference between the expected value of the
-log likelihood of the data given the current parameters and the previous
-iteration is less than 1e-6 or when the maximum number of iterations is
-reached.
+The algorithm stops when the changes in the expectations are sufficiently
+small or when a maximum number of iterations is reached.
 }
 \examples{
 ### Helper function
@@ -98,7 +102,10 @@ test(clustlearn::db5, 3)
 ### Example 6
 test(clustlearn::db6, 3)
 
+### Example 7 (with explanations, no plots)
+cl <- gaussian_mixture(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
+
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
+Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
 }

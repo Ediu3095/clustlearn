@@ -5,6 +5,10 @@
 #'
 #' @param data a set of observations, presented as a matrix-like object where
 #' every row is a new observation.
+#' @param details a Boolean determining whether intermediate logs explaining how
+#' the algorithm works should be printed or not.
+#' @param waiting a Boolean determining whether the intermediate logs should be
+#' printed in chunks waiting for user input before printing the next or not.
 #' @param ... additional arguments passed to [clustlearn::kmeans()].
 #'
 #' @details This function performs a hierarchical cluster analysis for the
@@ -54,10 +58,34 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3)
 #'
-#' @author Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@@gmail.com}
+#' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
 #' @export
-divisive_clustering <- function(data, ...) {
+divisive_clustering <- function(
+  data,
+  details = FALSE,
+  waiting = TRUE,
+  ...
+) {
+  if (details) {
+    hline()
+    console.log("EXPLANATION:")
+    console.log("")
+    console.log("The Divisive Hierarchical Clustering algorithm defines a clustering hierarchy for a dataset following a `n` step process, which repeats until `n` clusters remain:")
+    console.log("")
+    console.log("")
+    console.log("    1. Initially, each object is assigned to the same cluster. The sum of squares of the distances between objects and their cluster center is computed.")
+    console.log("    2. The cluster with the highest sum of squares is split into two using the K-Means algorithm. This step is repeated until `n` clusters remain.")
+    console.log("")
+    console.log("Since this implementation builds a complete hierarchy, the second step does not need to be performed on the cluster with the highest sum of squares, but rather on any cluster with more than one element.")
+    console.log("")
+
+    if (waiting) {
+      invisible(readline(prompt = "Press [enter] to continue"))
+      console.log("")
+    }
+  }
+
   # Prepare the data structure which will hold the answer
   ans <- structure(
     list(
@@ -84,6 +112,22 @@ divisive_clustering <- function(data, ...) {
 
   # Build a list with all clusters
   clusters <- list(wrapped_data)
+
+  if (details) {
+    hline()
+    console.log("STEP 1:")
+    console.log("")
+    console.log("Initially, each object is assigned to the same cluster. The sum of squares of the distances between objects and their cluster center is computed.")
+    cat("Initial cluster:\n")
+    cat(paste0("CLUSTER #", clusters[[1]]$label, ":\n"))
+    print(clusters[[1]]$data)
+    console.log("")
+
+    if (waiting) {
+      invisible(readline(prompt = "Press [enter] to continue"))
+      console.log("")
+    }
+  }
 
   # Until there are no clusters with sum of squares greater than 0
   while (any(sapply(clusters, function(x) length(x$elems)) > 1)) {

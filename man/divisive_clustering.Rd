@@ -4,11 +4,17 @@
 \alias{divisive_clustering}
 \title{Divisive Hierarchical Clustering}
 \usage{
-divisive_clustering(data, ...)
+divisive_clustering(data, details = FALSE, waiting = TRUE, ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
 every row is a new observation.}
+
+\item{details}{a Boolean determining whether intermediate logs explaining how
+the algorithm works should be printed or not.}
+
+\item{waiting}{a Boolean determining whether the intermediate logs should be
+printed in chunks waiting for user input before printing the next or not.}
 
 \item{...}{additional arguments passed to \code{\link[=kmeans]{kmeans()}}.}
 }
@@ -67,5 +73,5 @@ test(clustlearn::db6, 3)
 
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
+Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
 }

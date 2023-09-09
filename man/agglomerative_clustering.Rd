@@ -4,7 +4,13 @@
 \alias{agglomerative_clustering}
 \title{Agglomerative Hierarchical Clustering}
 \usage{
-agglomerative_clustering(data, proximity = "single", ...)
+agglomerative_clustering(
+  data,
+  proximity = "single",
+  details = FALSE,
+  waiting = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -13,6 +19,12 @@ every row is a new observation.}
 \item{proximity}{the proximity definition to be used. This should be one
 of \code{"single"} (minimum/single linkage), \code{"complete"} (maximum/
 complete linkage), \code{"average"} (average linkage).}
+
+\item{details}{a Boolean determining whether intermediate logs explaining how
+the algorithm works should be printed or not.}
+
+\item{waiting}{a Boolean determining whether the intermediate logs should be
+printed in chunks waiting for user input before printing the next or not.}
 
 \item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
@@ -89,5 +101,5 @@ test(clustlearn::db6, 3, "c") # same as "complete"
 
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
+Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
 }

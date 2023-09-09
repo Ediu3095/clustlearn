@@ -4,7 +4,7 @@
 \alias{dbscan}
 \title{Density Based Spatial Clustering of Applications with Noise (DBSCAN)}
 \usage{
-dbscan(data, eps, min_pts = 4, ...)
+dbscan(data, eps, min_pts = 4, details = FALSE, waiting = TRUE, ...)
 }
 \arguments{
 \item{data}{a set of observations, presented as a matrix-like object where
@@ -14,6 +14,12 @@ every row is a new observation.}
 
 \item{min_pts}{the minimum amount of neighbors for a region to be considered
 dense.}
+
+\item{details}{a Boolean determining whether intermediate logs explaining how
+the algorithm works should be printed or not.}
+
+\item{waiting}{a Boolean determining whether the intermediate logs should be
+printed in chunks waiting for user input before printing the next or not.}
 
 \item{...}{additional arguments passed to \code{\link[proxy:dist]{proxy::dist()}}.}
 }
@@ -85,7 +91,10 @@ test(clustlearn::db5, 0.3)
 ### Example 6
 test(clustlearn::db6, 0.3)
 
+### Example 7 (with explanations, no plots)
+cl <- dbscan(clustlearn::db5[1:20, ], 0.3, details = TRUE, waiting = FALSE)
+
 }
 \author{
-Eduardo Ruiz Sabajanes, \email{eduardoruizsabajanes@gmail.com}
+Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@edu.uah.es}
 }
