@@ -41,6 +41,8 @@ the k-means algorithm. This step is repeated until \eqn{n} clusters remain.
 }
 }
 \examples{
+### !! This algorithm is very slow, so we'll only test it on some datasets !!
+
 ### Helper function
 test <- function(db, k) {
   print(cl <- clustlearn::divisive_clustering(db))
@@ -54,16 +56,16 @@ test <- function(db, k) {
 }
 
 ### Example 1
-test(clustlearn::db1, 2)
+# test(clustlearn::db1, 2)
 
 ### Example 2
-test(clustlearn::db2, 2)
+# test(clustlearn::db2, 2)
 
 ### Example 3
 test(clustlearn::db3, 3)
 
 ### Example 4
-test(clustlearn::db4, 3)
+# test(clustlearn::db4, 3)
 
 ### Example 5
 test(clustlearn::db5, 3)
