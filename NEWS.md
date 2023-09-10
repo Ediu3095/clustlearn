@@ -1,6 +1,4 @@
-# clustlearn
-
-## Initial CRAN submission (version 1.0.0)
+# clustlearn 1.0.0
 
 New features
 
@@ -15,3 +13,5 @@ New features
 - New `db4` data.frame with 500 observations (2 features) in the shape of three elongated clusters;
 - New `db5` data.frame with 500 observations (2 features) in the shape of three isotropic clusters;
 - New `db6` data.frame with 500 observations (2 features) randomly distributed across the bi-dimensional plane.
+
+Initial CRAN submission
