@@ -1,26 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# `{r, include = FALSE} # knitr::opts_chunk$set( #   collapse = TRUE, #   comment = "#>", #   fig.path = "man/figures/README-", #   out.width = "100%" # ) #`
-
 # clustlearn
-
-<!-- badges: start -->
-<!-- badges: end -->
 
 The goal of clustlearn is to provide a set of functions to perform
 clustering analysis along with comprehensive explanations of the
 algorithms, their pros and cons, and their applications.
 
 ## Installation
-
-You can install the development version of clustlearn from
-[GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("Ediu3095/clustlearn")
-```
 
 You can install the released version of clustlearn from
 [CRAN](https://CRAN.R-project.org) with:
@@ -29,94 +16,323 @@ You can install the released version of clustlearn from
 install.packages("clustlearn")
 ```
 
+You can install the development version of clustlearn from
+[GitHub](https://github.com/) with:
+
+``` r
+devtools::install_github("Ediu3095/clustlearn")
+```
+
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to cluster a dataset:
 
 ``` r
-library(clustlearn)
+# # Load the clustlearn package
+# library(clustlearn)
+
+# Perform the clustering (the clustlearn:: prefix is not necessary)
+cl <- clustlearn::dbscan(clustlearn::db1, 0.3)
+
+# Plot the results
+out <- cl$cluster == 0
+plot(clustlearn::db1[!out, ], col = cl$cluster[!out], pch = 20, asp = 1)
+points(clustlearn::db1[out, ], col = max(cl$cluster) + 1, pch = 4, lwd = 2)
 ```
+
+![](man/README_files/figure-gfm/example_cluster-1.png)<!-- -->
+
+This is yet another basic example which shows you how to see the
+step-by-step procedure of the clustering algorithm:
+
+``` r
+# # Load the clustlearn package
+# library(clustlearn)
+
+# Perform the clustering (the clustlearn:: prefix is not necessary)
+# The details argument is set to TRUE to see the step-by-step procedure
+cl <- clustlearn::agglomerative_clustering(
+  clustlearn::db5[1:6, ],
+  'single',
+  details = TRUE,
+  waiting = FALSE
+)
+```
+
+    ## ________________________________________________________________________________
+
+    ## EXPLANATION:
 
     ## 
-    ## Attaching package: 'clustlearn'
 
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     kmeans
+    ## The Agglomerative Hierarchical Clustering algorithm defines a clustering hierarc
 
-``` r
-data <- clustlearn::db4
-cols <- c("#00000019", "#DF536B19", "#61D04F19", "#2297E619", "#28E2E519", "#CD0BBC19", "#F5C71019", "#9e9e9e19")
-k <- 3
+    ## hy for a dataset following a `n` step process, which repeats until a single clus
 
-# VONOROI DIAGRAM
-library(deldir)
-```
-
-    ## deldir 1.0-9      Nickname: "Partial Distinction"
+    ## ter remains:
 
     ## 
-    ##      The syntax of deldir() has changed since version 
-    ##      0.0-10.  In particular the "dummy points" facility 
-    ##      (which was a historical artifact) has been removed. 
-    ##      In the current version, 1.0-8, an argument "id" has 
-    ##      been added to deldir().  This new argument permits the 
-    ##      user to specifier identifiers for points.  The default 
-    ##      behaviour is to continue using the indices of the 
-    ##      points to identify them.  In view of the fact that 
-    ##      point identifiers may be user-supplied, the arguement 
-    ##      "number", in plot.deldir() and plot.tile.list(), has 
-    ##      had its name changed to "labelPts", and the argument 
-    ##      "nex" in plot.deldir() has had its name changed to 
-    ##      "lex".  In addition the name of the forth component 
-    ##      of the "cmpnt_col" argument in plot.deldir() has been 
-    ##      changed from "num" to "labels".  There is a new 
-    ##      function getNbrs(), and the function tileInfo() has 
-    ##      been modified to include output from getNbrs(). 
-    ##      Please consult the help.
 
-``` r
-members <- kmeans(data, k, 100)
+    ##     1. Initially, each object is assigned to its own cluster. The matrix of dist
 
-tesselation <- deldir(members$centers[, 1], members$centers[, 2], rw = c(-10, 10, -10, 10))
-tiles <- tile.list(tesselation)
+    ##     ances between clusters is computed.
 
-par(mar = c(1, 1, 1, 1))
-plot(data, col = members$cluster, main = '', sub = '', xlab = '', ylab = '', asp = 1, frame.plot = TRUE, axes = FALSE, pch = 20)
-points(members$centers, col = seq_len(k), pch = 13, cex = 3)
-plot(tiles, main = '', sub = '', xlab = '', ylab = '', asp = 1, frame.plot = TRUE, axes = FALSE, pch = 19, add = TRUE, showpoints = FALSE, border = "#ffffff00", fillcol = cols)
-```
+    ##     2. The two clusters with closest proximity will be joined together and the p
 
-![](man/README_files/figure-gfm/example-1.png)<!-- -->
+    ##     roximity matrix updated. This is done according to the specified proximity.
 
-``` r
-# NORMAL DISTRIBUTION
-members <- gaussian_mixture(data, k, 100)
-mu <- members$mu
-sigma <- members$sigma
-lambda <- members$lambda
+    ##     This step is repeated until a single cluster remains.
 
-x <- seq(-3, 3, 0.1) 
-y <- seq(-3, 3, 0.1)
+    ## 
 
-par(mar = c(1, 1, 1, 1))
-plot(data, col = members$cluster, main = '', sub = '', xlab = '', ylab = '', asp = 1, frame.plot = TRUE, axes = FALSE, pch = 20)
-for (i in seq_len(k)) {
-  m <- mu[i, ]
-  s <- sigma[i, , ]
-  f <- function(x, y) lambda[i] * clustlearn:::dmnorm(cbind(x, y), m, s)
-  z <- outer(x, y, f)
-  contour(x, y, z, col = i, add = TRUE)
-}
-```
+    ## The definitions of proximity considered by this function are:
 
-![](man/README_files/figure-gfm/example-2.png)<!-- -->
+    ## 
 
-``` r
-# DENSITY
-plot(data, col = (dbscan(data, .25, 5)$cluster + 3) %% 4 + 1, main = '', sub = '', xlab = '', ylab = '', asp = 1, frame.plot = TRUE, axes = FALSE, pch = 20)
-```
+    ##     1. `single`. Defines the proximity between two clusters as the distance betw
 
-![](man/README_files/figure-gfm/example-3.png)<!-- -->
+    ##     een the closest objects among the two clusters. It produces clusters where e
+
+    ##     ach object is closest to at least one other object in the same cluster. It i
+
+    ##     s known as SLINK, single-link or minimum-link.
+
+    ##     2. `complete`. Defines the proximity between two clusters as the distance be
+
+    ##     tween the furthest objects among the two clusters. It is known as CLINK, com
+
+    ##     plete-link or maximum-link.
+
+    ##     3. `average`. Defines the proximity between two clusters as the average dist
+
+    ##     ance between every pair of objects, one from each cluster. It is also known
+
+    ##     as UPGMA or average-link.
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 1:
+
+    ## 
+
+    ## Initially, each object is assigned to its own cluster. This leaves us with the f
+
+    ## ollowing clusters:
+
+    ## CLUSTER #-1 (size: 1)
+    ##           x         y
+    ## 1 -1.578117 -1.292868
+    ## CLUSTER #-2 (size: 1)
+    ##           x        y
+    ## 2 0.7027994 1.193823
+    ## CLUSTER #-3 (size: 1)
+    ##           x        y
+    ## 3 0.7854535 1.191428
+    ## CLUSTER #-4 (size: 1)
+    ##           x           y
+    ## 4 0.6757613 -0.04002442
+    ## CLUSTER #-5 (size: 1)
+    ##           x         y
+    ## 5 0.8484305 0.2230609
+    ## CLUSTER #-6 (size: 1)
+    ##          x         y
+    ## 6 0.515489 0.3014147
+
+    ## 
+
+    ## The matrix of distances between clusters is computed:
+
+    ## Distances:
+    ##       -1    -2    -3    -4    -5
+    ## -2 3.374                        
+    ## -3 3.429 0.083                  
+    ## -4 2.579 1.234 1.236            
+    ## -5 2.861 0.982 0.970 0.315      
+    ## -6 2.632 0.912 0.930 0.377 0.342
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 2:
+
+    ## 
+
+    ## The two clusters with closest proximity are identified:
+
+    ## Clusters:
+    ## CLUSTER #-2 (size: 1)
+    ## CLUSTER #-3 (size: 1)
+    ## Proximity:
+    ## [1] 0.08268877
+
+    ## 
+
+    ## They are merged into a new cluster:
+
+    ## CLUSTER #1 (size: 2) [CLUSTER #-2 + CLUSTER #-3]
+
+    ## 
+
+    ## The proximity matrix is updated. To do so the rows/columns of the merged cluster
+
+    ## s are removed, and the rows/columns of the new cluster are added:
+
+    ## Distances:
+    ##       -1    -4    -5    -6
+    ## -4 2.579                  
+    ## -5 2.861 0.315            
+    ## -6 2.632 0.377 0.342      
+    ## 1  3.374 1.234 0.970 0.912
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 3:
+
+    ## 
+
+    ## The two clusters with closest proximity are identified:
+
+    ## Clusters:
+    ## CLUSTER #-4 (size: 1)
+    ## CLUSTER #-5 (size: 1)
+    ## Proximity:
+    ## [1] 0.3146881
+
+    ## 
+
+    ## They are merged into a new cluster:
+
+    ## CLUSTER #2 (size: 2) [CLUSTER #-4 + CLUSTER #-5]
+
+    ## 
+
+    ## The proximity matrix is updated. To do so the rows/columns of the merged cluster
+
+    ## s are removed, and the rows/columns of the new cluster are added:
+
+    ## Distances:
+    ##       -1    -6     1
+    ## -6 2.632            
+    ## 1  3.374 0.912      
+    ## 2  2.579 0.342 0.970
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 4:
+
+    ## 
+
+    ## The two clusters with closest proximity are identified:
+
+    ## Clusters:
+    ## CLUSTER #-6 (size: 1)
+    ## CLUSTER #2 (size: 2)
+    ## Proximity:
+    ## [1] 0.342037
+
+    ## 
+
+    ## They are merged into a new cluster:
+
+    ## CLUSTER #3 (size: 3) [CLUSTER #-6 + CLUSTER #2]
+
+    ## 
+
+    ## The proximity matrix is updated. To do so the rows/columns of the merged cluster
+
+    ## s are removed, and the rows/columns of the new cluster are added:
+
+    ## Distances:
+    ##      -1     1
+    ## 1 3.374      
+    ## 3 2.579 0.912
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 5:
+
+    ## 
+
+    ## The two clusters with closest proximity are identified:
+
+    ## Clusters:
+    ## CLUSTER #1 (size: 2)
+    ## CLUSTER #3 (size: 3)
+    ## Proximity:
+    ## [1] 0.9118542
+
+    ## 
+
+    ## They are merged into a new cluster:
+
+    ## CLUSTER #4 (size: 5) [CLUSTER #1 + CLUSTER #3]
+
+    ## 
+
+    ## The proximity matrix is updated. To do so the rows/columns of the merged cluster
+
+    ## s are removed, and the rows/columns of the new cluster are added:
+
+    ## Distances:
+    ##      -1
+    ## 4 2.579
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## STEP 6:
+
+    ## 
+
+    ## The two clusters with closest proximity are identified:
+
+    ## Clusters:
+    ## CLUSTER #-1 (size: 1)
+    ## CLUSTER #4 (size: 5)
+    ## Proximity:
+    ## [1] 2.578678
+
+    ## 
+
+    ## They are merged into a new cluster:
+
+    ## CLUSTER #5 (size: 6) [CLUSTER #-1 + CLUSTER #4]
+
+    ## 
+
+    ## The proximity matrix is updated. To do so the rows/columns of the merged cluster
+
+    ## s are removed, and the rows/columns of the new cluster are added:
+
+    ## Distances:
+    ## dist(0)
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+    ## RESULTS:
+
+    ## 
+
+    ## Since all clusters have been merged together, the final clustering hierarchy is:
+
+    ## (Check the plot for the dendrogram representation of the hierarchy)
+
+    ## 
+
+    ## ________________________________________________________________________________
+
+![](man/README_files/figure-gfm/example_procedure-1.png)<!-- -->
 
 <!-- You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>. -->

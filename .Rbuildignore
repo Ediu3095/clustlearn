@@ -4,3 +4,4 @@
 ^README\.Rmd$
 ^ignore/
 ^R/genetic_kmeans.R$
+^cran-comments\.md$
