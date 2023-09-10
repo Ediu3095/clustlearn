@@ -52,6 +52,8 @@
 #' }
 #'
 #' @examples
+#' ### !! This algorithm can be slow, so we'll only test it on some datasets !!
+#'
 #' ### Helper function
 #' test <- function(db, k) {
 #'   print(cl <- clustlearn::gaussian_mixture(db, k, 100))
@@ -73,7 +75,7 @@
 #' test(clustlearn::db1, 2)
 #'
 #' ### Example 2
-#' test(clustlearn::db2, 2)
+#' # test(clustlearn::db2, 2)
 #'
 #' ### Example 3
 #' test(clustlearn::db3, 3)
@@ -85,7 +87,7 @@
 #' test(clustlearn::db5, 3)
 #'
 #' ### Example 6
-#' test(clustlearn::db6, 3)
+#' # test(clustlearn::db6, 3)
 #'
 #' ### Example 7 (with explanations, no plots)
 #' cl <- gaussian_mixture(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
@@ -162,7 +164,7 @@ gaussian_mixture <- function(
   # EM algorithm
   # Starting values of expected value of the log likelihood
   q <- c(
-    sum.finite(
+    sum_finite(
       sapply(
         seq_len(k),
         function(i) {
@@ -195,7 +197,7 @@ gaussian_mixture <- function(
       seq_len(k),
       function(i) lambda[i] * dmnorm(data, mu[i, ], as.matrix(sigma[i, , ]))
     )
-    comp_sum <- rowSums.finite(comp)
+    comp_sum <- rowSums_finite(comp)
     p <- comp / comp_sum
 
     if (details) {
@@ -218,13 +220,13 @@ gaussian_mixture <- function(
     # M step
     lambda <- sapply(
       seq_len(k),
-      function(i) sum.finite(p[, i]) / nrow(data)
+      function(i) sum_finite(p[, i]) / nrow(data)
     )
     for (i in seq_len(k)) {
-      mu[i, ] <- colSums.finite(p[, i] * data) / sum.finite(p[, i])
+      mu[i, ] <- colSums_finite(p[, i] * data) / sum_finite(p[, i])
     }
     for (i in seq_len(k)) {
-      tmp <- cov.wt.finite(data, wt = p[, i], center = mu[i, ])$cov
+      tmp <- wtcov_finite(data, wt = p[, i], center = mu[i, ])$cov
       sigma[i, , ] <- as.matrix(tmp)
     }
 
@@ -335,23 +337,23 @@ dmnorm <- function(x, mu, sigma) {
 # Finite versions of sum, rowSums, colSums and cov.wt i.e. versions that
 # replace NA, NaN and Inf values with 1e-300 (ignoring them would lead to
 # numerical errors)
-sum.finite <- function(x) {
+sum_finite <- function(x) {
   x[!is.finite(x)] <- 1e-300
   sum(x)
 }
 
-rowSums.finite <- function(x) {
+rowSums_finite <- function(x) {
   x[!is.finite(x)] <- 1e-300
   rowSums(x)
 }
 
-colSums.finite <- function(x) {
+colSums_finite <- function(x) {
   x[!is.finite(x)] <- 1e-300
   colSums(x)
 }
 
 #' @importFrom stats cov.wt
-cov.wt.finite <- function(x, wt, center) {
+wtcov_finite <- function(x, wt, center) {
   wt[!is.finite(wt)] <- 1e-300
   cov.wt(x, wt = wt, center = center)
 }

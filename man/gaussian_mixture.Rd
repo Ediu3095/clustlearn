@@ -67,6 +67,8 @@ The algorithm stops when the changes in the expectations are sufficiently
 small or when a maximum number of iterations is reached.
 }
 \examples{
+### !! This algorithm can be slow, so we'll only test it on some datasets !!
+
 ### Helper function
 test <- function(db, k) {
   print(cl <- clustlearn::gaussian_mixture(db, k, 100))
@@ -88,7 +90,7 @@ test <- function(db, k) {
 test(clustlearn::db1, 2)
 
 ### Example 2
-test(clustlearn::db2, 2)
+# test(clustlearn::db2, 2)
 
 ### Example 3
 test(clustlearn::db3, 3)
@@ -100,7 +102,7 @@ test(clustlearn::db4, 3)
 test(clustlearn::db5, 3)
 
 ### Example 6
-test(clustlearn::db6, 3)
+# test(clustlearn::db6, 3)
 
 ### Example 7 (with explanations, no plots)
 cl <- gaussian_mixture(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
