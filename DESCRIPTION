@@ -1,11 +1,17 @@
 Package: clustlearn
 Title: Learn Clustering Techniques Through Examples and Code
 Version: 0.0.0.9000
-Authors@R: person("Eduardo", "Ruiz Sabajanes", email = "eduardo.ruizs@edu.uah.es", role = c("aut", "cph", "cre"))
+Authors@R: c(
+        person("Eduardo", "Ruiz Sabajanes", email = "eduardo.ruizs@edu.uah.es", role = c("aut", "cre")),
+        person("Juan Jose", "Cuadrado Gallego", email = "jjcg@uah.es", role = c("ctb"), comment = c(ORCID = "0000-0001-8178-5556")),
+        person("Universidad de Alcala", role = c("cph"))
+    )
 Description: A package that provides R implementations of several clustering techniques
     along with explanations of the algorithms and implementations, pros and cons
     of each technique, example use cases with visualizations and coding exercises
     to test your knowledge.
+URL: https://github.com/Ediu3095/clustlearn
+BugReports: https://github.com/Ediu3095/clustlearn/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

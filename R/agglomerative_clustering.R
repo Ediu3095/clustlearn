@@ -82,6 +82,7 @@
 #' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
 #' @importFrom proxy dist
+#' @importFrom stats as.dist
 #' @export
 agglomerative_clustering <- function(
   data,

@@ -75,7 +75,7 @@ divisive_clustering <- function(
     console.log("")
     console.log("")
     console.log("    1. Initially, each object is assigned to the same cluster. The sum of squares of the distances between objects and their cluster center is computed.")
-    console.log("    2. The cluster with the highest sum of squares is split into two using the K-Means algorithm. This step is repeated until `n` clusters remain.")
+    console.log("    2. The cluster with the highest Within-Cluster Sum-of-Squares (WCSS) is split into two using the K-Means algorithm. This step is repeated until `n` clusters remain.")
     console.log("")
     console.log("Since this implementation builds a complete hierarchy, the second step does not need to be performed on the cluster with the highest sum of squares, but rather on any cluster with more than one element.")
     console.log("")
@@ -130,10 +130,26 @@ divisive_clustering <- function(
   }
 
   # Until there are no clusters with sum of squares greater than 0
+  iter <- 2
   while (any(sapply(clusters, function(x) length(x$elems)) > 1)) {
     # We'll operate on the first cluster and order them all afterwards
     target <- clusters[[1]]
     clusters <- clusters[-1]
+
+    if (details) {
+      hline()
+      console.log(paste0("STEP ", iter, ":"))
+      console.log("")
+      console.log("Any cluster is selected for division:")
+      cat("Cluster:\n")
+      cat(paste0("CLUSTER #", target$label, " (WCSS: ", target$ss, ")\n"))
+      console.log("")
+
+      if (waiting) {
+        invisible(readline(prompt = "Press [enter] to continue"))
+        console.log("")
+      }
+    }
 
     # Split the target cluster into two using the k-means approach
     km <- clustlearn::kmeans(target$data, 2, ...)
@@ -164,17 +180,57 @@ divisive_clustering <- function(
       target$label - length(lhs$elems)
     }
 
+    if (details) {
+      console.log("The cluster is divided through the K-Means method into two that (approximately) minimize the WCSS:")
+      cat(paste0("CLUSTER #", lhs$label, " (WCSS: ", lhs$ss, ")\n"))
+      print(lhs$data)
+      console.log("")
+      cat(paste0("CLUSTER #", rhs$label, " (WCSS: ", rhs$ss, ")\n"))
+      print(rhs$data)
+      console.log("")
+
+      if (waiting) {
+        invisible(readline(prompt = "Press [enter] to continue"))
+        console.log("")
+      }
+    }
+
     # Update the answer
     ans$merge <- c(lhs$label, rhs$label, ans$merge)
     ans$height <- c(km$totss, ans$height)
 
+    if (details) {
+      console.log("If the divided clusters containe more than one element, they are marked again for division:")
+    }
+
     # Replace the target cluster with the two new ones
     if (length(rhs$elems) > 1) {
       clusters <- c(list(rhs), clusters)
+
+      if (details) {
+        console.log("The following cluster is marked for division:")
+        cat(paste0("CLUSTER #", lhs$label, " (WCSS: ", lhs$ss, ")\n"))
+        print(lhs$data)
+      }
     }
     if (length(lhs$elems) > 1) {
       clusters <- c(list(lhs), clusters)
+      if (details) {
+        console.log("The following cluster is marked for division:")
+        cat(paste0("CLUSTER #", rhs$label, " (WCSS: ", rhs$ss, ")\n"))
+      }
     }
+
+    if (details) {
+      console.log("")
+
+      if (waiting) {
+        invisible(readline(prompt = "Press [enter] to continue"))
+        console.log("")
+      }
+    }
+
+    iter <- iter + 1
   }
 
   # Compute the merge and order of the hclust
@@ -188,6 +244,23 @@ divisive_clustering <- function(
 
   # Figure the order of the elements from the merge to build a proper dendrogram
   ans$order <- merge2order(ans$merge)
+
+  if (details) {
+    hline()
+    console.log("RESULTS:")
+    console.log("")
+    console.log("Since all clusters have been divided into clusters with a single element, the final clustering hierarchy is:")
+    console.log("(Check the plot for the dendrogram representation of the hierarchy)")
+    plot(ans, hang = -1)
+    console.log("")
+
+    if (waiting) {
+      invisible(readline(prompt = "Press [enter] to continue"))
+      console.log("")
+    }
+
+    hline()
+  }
 
   # Return the answer
   ans
