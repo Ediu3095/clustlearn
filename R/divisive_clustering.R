@@ -60,6 +60,13 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3)
 #'
+#' ### Example 7 (with explanations, no plots)
+#'   cl <- clustlearn::divisive_clustering(
+#'   clustlearn::db5[1:6, ],
+#'   details = TRUE,
+#'   waiting = FALSE
+#' )
+#'
 #' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
 #' @export

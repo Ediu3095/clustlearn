@@ -79,6 +79,14 @@
 #' ### Example 6
 #' test(clustlearn::db6, 3, "c") # same as "complete"
 #'
+#' ### Example 7 (with explanations, no plots)
+#'   cl <- clustlearn::agglomerative_clustering(
+#'   clustlearn::db5[1:6, ],
+#'   'single',
+#'   details = TRUE,
+#'   waiting = FALSE
+#' )
+#'
 #' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
 #' @importFrom proxy dist

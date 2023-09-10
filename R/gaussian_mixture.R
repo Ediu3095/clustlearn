@@ -90,7 +90,12 @@
 #' # test(clustlearn::db6, 3)
 #'
 #' ### Example 7 (with explanations, no plots)
-#' cl <- gaussian_mixture(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
+#' cl <- clustlearn::gaussian_mixture(
+#'   clustlearn::db5[1:20, ],
+#'   3,
+#'   details = TRUE,
+#'   waiting = FALSE
+#' )
 #'
 #' @author Eduardo Ruiz Sabajanes, \email{eduardo.ruizs@@edu.uah.es}
 #'
