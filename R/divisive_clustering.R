@@ -32,7 +32,7 @@
 #'
 #' ### Helper function
 #' test <- function(db, k) {
-#'   print(cl <- clustlearn::divisive_clustering(db))
+#'   print(cl <- clustlearn::divisive_clustering(db, max_iterations = 5))
 #'   par(mfrow = c(1, 2))
 #'   plot(db, col = cutree(cl, k), asp = 1, pch = 20)
 #'   h <- rev(cl$height)[50]
@@ -49,7 +49,7 @@
 #' # test(clustlearn::db2, 2)
 #'
 #' ### Example 3
-#' test(clustlearn::db3, 3)
+#' # test(clustlearn::db3, 3)
 #'
 #' ### Example 4
 #' # test(clustlearn::db4, 3)

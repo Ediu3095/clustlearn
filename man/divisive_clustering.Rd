@@ -45,7 +45,7 @@ the k-means algorithm. This step is repeated until \eqn{n} clusters remain.
 
 ### Helper function
 test <- function(db, k) {
-  print(cl <- clustlearn::divisive_clustering(db))
+  print(cl <- clustlearn::divisive_clustering(db, max_iterations = 5))
   par(mfrow = c(1, 2))
   plot(db, col = cutree(cl, k), asp = 1, pch = 20)
   h <- rev(cl$height)[50]
@@ -62,7 +62,7 @@ test <- function(db, k) {
 # test(clustlearn::db2, 2)
 
 ### Example 3
-test(clustlearn::db3, 3)
+# test(clustlearn::db3, 3)
 
 ### Example 4
 # test(clustlearn::db4, 3)
@@ -72,6 +72,13 @@ test(clustlearn::db5, 3)
 
 ### Example 6
 test(clustlearn::db6, 3)
+
+### Example 7 (with explanations, no plots)
+  cl <- clustlearn::divisive_clustering(
+  clustlearn::db5[1:6, ],
+  details = TRUE,
+  waiting = FALSE
+)
 
 }
 \author{

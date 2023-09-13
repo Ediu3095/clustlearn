@@ -52,9 +52,20 @@
 #' }
 #'
 #' @examples
-#' ### !! This algorithm can be slow, so we'll only test it on some datasets !!
+#' ### !! This algorithm is very slow, so we'll only test it on some datasets !!
 #'
-#' ### Helper function
+#' ### Helper functions
+#' dmnorm <- function(x, mu, sigma) {
+#'   k <- ncol(sigma)
+#'
+#'   x  <- as.matrix(x)
+#'   diff <- t(t(x) - mu)
+#'
+#'   num <- exp(-1 / 2 * diag(diff %*% solve(sigma) %*% t(diff)))
+#'   den <- sqrt(((2 * pi)^k) * det(sigma))
+#'   num / den
+#' }
+#'
 #' test <- function(db, k) {
 #'   print(cl <- clustlearn::gaussian_mixture(db, k, 100))
 #'
@@ -65,7 +76,7 @@
 #'   for (i in seq_len(k)) {
 #'     m <- cl$mu[i, ]
 #'     s <- cl$sigma[i, , ]
-#'     f <- function(x, y) cl$lambda[i] * clustlearn:::dmnorm(cbind(x, y), m, s)
+#'     f <- function(x, y) cl$lambda[i] * dmnorm(cbind(x, y), m, s)
 #'     z <- outer(x, y, f)
 #'     contour(x, y, z, col = i, add = TRUE)
 #'   }

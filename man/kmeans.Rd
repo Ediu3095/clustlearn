@@ -145,7 +145,12 @@ test(clustlearn::db5, 3)
 test(clustlearn::db6, 3)
 
 ### Example 7 (with explanations, no plots)
-cl <- kmeans(clustlearn::db5[1:20, ], 3, details = TRUE, waiting = FALSE)
+cl <- clustlearn::kmeans(
+  clustlearn::db5[1:20, ],
+  3,
+  details = TRUE,
+  waiting = FALSE
+)
 
 }
 \author{

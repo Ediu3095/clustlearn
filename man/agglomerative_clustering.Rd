@@ -69,23 +69,26 @@ each cluster. It is also known as \strong{UPGMA} or \strong{average-link}.}
 }
 }
 \examples{
+### !! This algorithm is very slow, so we'll only test it on some datasets !!
+
 ### Helper function
 test <- function(db, k, prox) {
   print(cl <- clustlearn::agglomerative_clustering(db, prox))
-  par(mfrow = c(1, 2))
+  oldpar <- par(mfrow = c(1, 2))
   plot(db, col = cutree(cl, k), asp = 1, pch = 20)
   h <- rev(cl$height)[50]
   clu <- as.hclust(cut(as.dendrogram(cl), h = h)$upper)
   ctr <- unique(cutree(cl, k)[cl$order])
   plot(clu, labels = FALSE, hang = -1, xlab = "Cluster", sub = "", main = "")
   rect.hclust(clu, k = k, border = ctr)
+  par(oldpar)
 }
 
 ### Example 1
 test(clustlearn::db1, 2, "single")
 
 ### Example 2
-test(clustlearn::db2, 2, "sing") # same as "single"
+# test(clustlearn::db2, 2, "sing") # same as "single"
 
 ### Example 3
 test(clustlearn::db3, 4, "a") # same as "average"
@@ -97,7 +100,15 @@ test(clustlearn::db4, 6, "s") # same as "single"
 test(clustlearn::db5, 3, "complete")
 
 ### Example 6
-test(clustlearn::db6, 3, "c") # same as "complete"
+# test(clustlearn::db6, 3, "c") # same as "complete"
+
+### Example 7 (with explanations, no plots)
+  cl <- clustlearn::agglomerative_clustering(
+  clustlearn::db5[1:6, ],
+  'single',
+  details = TRUE,
+  waiting = FALSE
+)
 
 }
 \author{
